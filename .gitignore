@@ -1,0 +1,21 @@
+# Ignore Extrae results.
+**/*.pcf
+**/*.prv
+**/*.row
+**/TRACE*
+
+# Ignore the directories used during installation.
+build/
+install/
+sources/
+
+# Ignore results folder and other results.
+results
+profiling/**/res-*/**/*.db
+profiling/**/res-*/**/*.json
+profiling/**/res-*/**/*.sysinfo.txt
+fort.20
+core
+
+# Ignore Python environments.
+**/venv/
