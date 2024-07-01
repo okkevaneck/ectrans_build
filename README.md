@@ -84,7 +84,7 @@ want to remove the ectrans installation, you can remove it with:
 After you have succesfully build and installed all three components, you can
 now run the binaries located at `src/install/ectrans/bin`. The run directory
 contains a pre-made script for executing the model through SLURM jobs.
-If you want to run the GPU version, you can run the `run_sbatch_lumi-g.sh`
+If you want to run the GPU version, you can `sbatch` the `run_sbatch_lumi-g.sh`
 script, which runs the GPU model by default with the following variables:
 
 ```console
