@@ -1,8 +1,8 @@
 # ecTrans dwarf
 
-The ecTrans dwarf requires ecBuild and FIAT to be installed. Moreover, a
-specific version of ecTrans, maintained by Okke van Eck, is installed to
-guarantee no major changes affect the installation procedure.
+The ecTrans dwarf requires ecBuild and FIAT to be installed before ecTrans 
+itself can be installed. Moreover, a specific version of ecTrans, maintained by 
+Okke van Eck, is installed as it contains custom ROCTX markers for profiling.
 
 This repositry has two major scripts: `install.sh` and `clean.sh`. Both will
 be explained in their own subsection below.
@@ -39,6 +39,10 @@ dependend on each other:
 1. ecbuild
 2. fiat
 3. ectrans.
+
+After building or installing an application, there will be a log file in the
+`build` or `install` directory with the name of the application. You can use
+this to debug any alterations you made to the source code.
 
 ## Cleaning
 
