@@ -1,11 +1,12 @@
 # ecTrans dwarf
 
-The ecTrans dwarf requires ecBuild and FIAT to be installed before ecTrans 
-itself can be installed. Moreover, a specific version of ecTrans, maintained by 
+The ecTrans dwarf requires ecBuild and FIAT to be installed before ecTrans
+itself can be installed. Moreover, a specific version of ecTrans, maintained by
 Okke van Eck, is installed as it contains custom ROCTX markers for profiling.
 
 This repositry has two major scripts: `install.sh` and `clean.sh`. Both will
-be explained in their own subsection below.
+be explained in their own subsection below. Afterwards a section will discuss
+how to run the model.
 
 ## Installation
 
@@ -77,3 +78,28 @@ want to remove the ectrans installation, you can remove it with:
 ```bash
 ./clean.sh install ectrans
 ```
+
+## Execution
+
+After you have succesfully build and installed all three components, you can
+now run the binaries located at `src/install/ectrans/bin`. The run directory
+contains a pre-made script for executing the model through SLURM jobs.
+If you want to run the GPU version, you can run the `run_sbatch_lumi-g.sh`
+script, which runs the GPU model by default with the following variables:
+
+```console
+BINARY=ectrans-lam-benchmark-gpu-dp-acc
+RESDIR=sbatch
+NPROMA=32
+NFLD=1
+NLEV=10
+NITER=10
+NLAT=128
+NLON=128
+```
+
+Every one of these variables can be changed through the environment variables,
+which all have exactly the same names as above. You can simply specify the name
+of any binary in the folder listed above as `BINARY` to change the model.
+Futhermore, you can also change the name of your results folder by changing the
+`RESDIR` environment variable.
