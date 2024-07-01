@@ -50,11 +50,11 @@ _build_install_ecbuild () {
     "${SOURCEDIR}/ecbuild/bin/ecbuild" --prefix="${INSTALLDIR}/ecbuild" \
         "${SOURCEDIR}/ecbuild"
     info "==>\t MAKE.."
-    make
+    make 2>&1 | tee "${BUILDDIR}/ecbuild.log"
 
     # Install ecBuild.
     info "==>\t MAKE INSTALL.."
-    make install
+    make install 2>&1 | tee "${INSTALLDIR}/ecbuild.log"
     success "==> SUCCESFULLY INSTALLED ECBUILD"
 }
 
@@ -75,11 +75,11 @@ _build_install_fiat () {
         -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FIAT_DIR}" -DENABLE_MPI=ON \
         -DBUILD_SHARED_LIBS=OFF -DENABLE_TESTS=OFF "${SOURCEDIR}/fiat"
     info "==>\t MAKE.."
-    make -j16
+    make -j16 2>&1 | tee "${BUILDDIR}/fiat.log"
 
     # Install FIAT.
     info "==>\t MAKE INSTALL.."
-    make install
+    make install 2>&1 | tee "${INSTALLDIR}/fiat.log"
     success "==> SUCCESFULLY INSTALLED FIAT"
 }
 
@@ -101,14 +101,16 @@ _build_install_ectrans () {
         -DENABLE_CPU=ON -DENABLE_ETRANS=ON  -DENABLE_DOUBLE_PRECISION=ON \
         -DENABLE_SINGLE_PRECISION=OFF "${SOURCEDIR}/ectrans"
     info "==>\t MAKE (supposed to fail).."
-    make LIBRARY_PATH=/opt/cray/pe/cce/16.0.1/cce-clang/x86_64/lib -j32
+    make LIBRARY_PATH=/opt/cray/pe/cce/16.0.1/cce-clang/x86_64/lib -j32 \
+        2>&1 | tee "${BUILDDIR}/ectrans.log"
     # Make needs to be executed twice as the first time it somehow fails.
     info "==>\t MAKE (again, should succeed).."
-    make LIBRARY_PATH=/opt/cray/pe/cce/16.0.1/cce-clang/x86_64/lib -j32
+    make LIBRARY_PATH=/opt/cray/pe/cce/16.0.1/cce-clang/x86_64/lib -j32 \
+        2>&1 | tee -a "${BUILDDIR}/ectrans.log"
 
     # Install ecTrans.
     info "==>\t MAKE INSTALL.."
-    make install
+    make install 2>&1 | tee "${INSTALLDIR}/ectrans.log"
     success "==> SUCCESFULLY INSTALLED ECTRANS"
 }
 
@@ -143,7 +145,7 @@ main () {
     else
         # Else parse every passed argument.
         for var in "$@"; do
-            arrVar=("${var//:/ }")
+            arrVar=(${var//:/ })
             instruction=${arrVar[0]}
             program=${arrVar[1]}
 
