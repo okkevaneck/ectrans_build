@@ -5,9 +5,7 @@
 **/TRACE*
 
 # Ignore the directories used during installation.
-build/
-install/
-sources/
+src/
 
 # Ignore results folder and other results.
 results
