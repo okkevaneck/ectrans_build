@@ -24,3 +24,4 @@ function success {
 function info {
     echo -e "\n$YELLOW \u003F ~ $1$NC\n" 1>&2
 }
+

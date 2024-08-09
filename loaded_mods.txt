@@ -1,0 +1,10 @@
+
+Currently Loaded Modules:
+  1) bsc/1.0          6) impi/2021.10.0              11) binutils/2.40-GCCcore-13.2.0
+  2) cmake/3.29.2     7) hdf5/1.14.1-2               12) GCC/13.2.0
+  3) EB/apps          8) fftw/3.3.10                 13) OpenBLAS/0.3.24-GCC-13.2.0
+  4) CUDA/12.5.0      9) GCCcore/13.2.0
+  5) intel/2023.2.0  10) zlib/1.2.13-GCCcore-13.2.0
+
+ 
+

@@ -10,9 +10,21 @@ source helpers/helpers.sh
 source helpers/dirs.sh
 
 # Setup required modules.
-source helpers/load_modules_lumi.sh
+module load \
+    cmake/3.29.2 EB/apps \
+    CUDA/12.5.0 \
+    intel/2023.2.0 impi/2021.10.0 \
+    hdf5/1.14.1-2 fftw/3.3.10 \
+    OpenBLAS/0.3.24-GCC-13.2.0
 
-# ---
+#module load \
+#    cmake/3.29.2 EB/apps \
+#    CUDA/12.5.0 \
+#    intel/2023.2.0 openmpi/4.1.5-gcc hdf5/1.14.1-2-gcc-ompi \
+#    fftw/3.3.10-gcc-ompi OpenBLAS/0.3.24-GCC-13.2.0
+
+#mpi/2021.11 openmpi/4.1.5-gcc
+module list &> loaded_mods.txt
 
 # Remove source and build files, and download fresh version.
 download () {
@@ -22,15 +34,29 @@ download () {
     # Pull ecTrans.
     info "==> PULLING ECTRANS"
     cd "${SOURCEDIR}" || exit 1
-    git clone https://github.com/OkkeVanEck/ectrans.git
-    success "==> SUCCESFULLY CLONED ECTRANS"
+    mkdir -p ectrans
+    cd ectrans || exit 1
+    git init
+    git remote add origin https://github.com/ecmwf-ifs/ectrans
+    git fetch --depth 1 origin c8c5c6100bb62b1d9ce15012a0722c0611992ae9
+
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY CLONED ECTRANS"
+    else
+	    error "==> FAILED TO CLONE ECTARNS"
+        error "    Make sure you're on login4."
+        exit 1
+    fi 
+    git checkout FETCH_HEAD 
+    cd ..
 
     # Pull ecBuild.
-    git clone --branch "3.8.2" https://github.com/ecmwf/ecbuild.git
+    git clone --branch "3.8.5" --single-branch https://github.com/ecmwf/ecbuild.git
     success "==> SUCCESFULLY CLONED ECBUILD"
 
     # Pull FIAT.
-    git clone --branch "1.2.0" https://github.com/ecmwf-ifs/fiat
+    git clone --branch "1.4.1" --single-branch https://github.com/ecmwf-ifs/fiat
     success "==> SUCCESFULLY CLONED FIAT"
 }
 
@@ -40,10 +66,8 @@ _build_install_ecbuild () {
     info "==> INSTALLING ECBUILD.."
     cd "${SOURCEDIR}/ecbuild" || exit 1
 
-    # Remove obsolete switch '-Gfast'.
-    sed -i -e "s/-Gfast//" cmake/compiler_flags/Cray_Fortran.cmake
-    
     # Create build directory and build ecBuild.
+    rm -rf "${BUILDDIR:?}/ecbuild" "${INSTALLDIR:?}/ecbuild"
     mkdir -p "${BUILDDIR}/ecbuild"
     cd "${BUILDDIR}/ecbuild" || exit 1
     info "==>\t ECBUILD.."
@@ -63,17 +87,15 @@ _build_install_fiat () {
     # Build and Install FIAT.
     info "==> INSTALLING FIAT.."
     cd "${SOURCEDIR}/fiat" || exit 1
-    # Small fix to include OpenMP in linking of C programs
-    sed -i -e "s/target_link_libraries( fiat-printbinding OpenMP::OpenMP_C )/target_link_libraries( fiat-printbinding \$\{OpenMP_C_FLAGS\} OpenMP::OpenMP_C )/" src/programs/CMakeLists.txt
     
     # Create build directory and build FIAT.
-    rm -rf "${BUILDDIR:?}/${FIAT_DIR:?}"
+    rm -rf "${BUILDDIR:?}/${FIAT_DIR:?}" "${INSTALLDIR:?}/${FIAT_DIR:?}"
     mkdir -p "${BUILDDIR}/${FIAT_DIR}"
     cd "${BUILDDIR}/${FIAT_DIR}" || exit 1
     info "==>\t ECBUILD.."
-    ecbuild -DCMAKE_BUILD_TYPE=RELEASE \
+    ecbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FIAT_DIR}" -DENABLE_MPI=ON \
-        -DBUILD_SHARED_LIBS=OFF -DENABLE_TESTS=OFF "${SOURCEDIR}/fiat"
+        -DENABLE_TESTS=OFF "${SOURCEDIR}/fiat"
     info "==>\t MAKE.."
     make -j16 2>&1 | tee "${BUILDDIR}/fiat.log"
 
@@ -95,18 +117,19 @@ _build_install_ectrans () {
     info "==>\t ECBUILD.."
     ecbuild --prefix="${INSTALLDIR}/${ECTRANS_DIR}" \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -Dfiat_ROOT="${INSTALLDIR}/${FIAT_DIR}" -DBUILD_SHARED_LIBS=OFF \
-        -DENABLE_FFTW=OFF -DENABLE_GPU=ON -DENABLE_OMPGPU=OFF \
+        -Dfiat_ROOT="${INSTALLDIR}/${FIAT_DIR}" \
+        -DENABLE_FFTW=ON -DENABLE_GPU=ON -DENABLE_OMPGPU=OFF \
         -DENABLE_ACCGPU=ON -DENABLE_TESTS=OFF -DENABLE_GPU_AWARE_MPI=ON \
         -DENABLE_CPU=ON -DENABLE_ETRANS=ON  -DENABLE_DOUBLE_PRECISION=ON \
-        -DENABLE_SINGLE_PRECISION=OFF "${SOURCEDIR}/ectrans"
+        -DENABLE_SINGLE_PRECISION=OFF \
+        -DOpenMP_Fortran_FLAGS="-fopenacc" \
+        -DCMAKE_Fortran_FLAGS="-fopenacc" \
+        -DCMAKE_C_FLAGS="-fopenacc" \
+        "${SOURCEDIR}/ectrans"
     info "==>\t MAKE (supposed to fail).."
-    make LIBRARY_PATH=/opt/cray/pe/cce/16.0.1/cce-clang/x86_64/lib -j32 \
-        2>&1 | tee "${BUILDDIR}/ectrans.log"
-    # Make needs to be executed twice as the first time it somehow fails.
+    make -j32 2>&1 | tee "${BUILDDIR}/ectrans.log"
     info "==>\t MAKE (again, should succeed).."
-    make LIBRARY_PATH=/opt/cray/pe/cce/16.0.1/cce-clang/x86_64/lib -j32 \
-        2>&1 | tee -a "${BUILDDIR}/ectrans.log"
+    make -j32 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
 
     # Install ecTrans.
     info "==>\t MAKE INSTALL.."
@@ -123,15 +146,15 @@ build_install_all () {
 
 main () {
     # Set compilers for make/cmake.
-    export FC90=ftn
-    export FC=ftn
+    export FC90=ifort
+    export FC=ifort
     export CC=cc
-    export CXX=CC
+    export CXX=cc
 
     # Export environment variables used during installation.
     export PATH=${PATH}:${INSTALLDIR}/ecbuild/bin/
-    export TOOLCHAIN_FILE=${SOURCEDIR}/ectrans/toolchain_lumi.cmake
-    export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
+    # export TOOLCHAIN_FILE=toolchains/toolchain_mn5.cmake
+    # export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
 
     # Create directories for the installation process.
     mkdir -p "${SOURCEDIR}" "${BUILDDIR}" "${INSTALLDIR}"
@@ -187,3 +210,4 @@ main () {
 
 # Call main as entrypoint of script.
 main "$@"
+

@@ -17,3 +17,4 @@ export RESULTS_DIR=${BASEDIR}/../results
 # Export application specific directories.
 export FIAT_DIR="fiat"
 export ECTRANS_DIR="ectrans"
+
