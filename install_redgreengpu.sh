@@ -12,10 +12,17 @@ source helpers/dirs.sh
 # Setup required modules.
 module load \
     cmake/3.29.2 EB/apps \
-    CUDA/12.5.0 \
-    intel/2023.2.0 impi/2021.10.0 \
-    hdf5/1.14.1-2 fftw/3.3.10 \
-    OpenBLAS/0.3.24-GCC-13.2.0
+    nvidia-hpc-sdk/24.3 \
+    intel/2023.2.0 \
+    impi/2021.10.0 fftw/3.3.10
+
+
+#module load \
+#    cmake/3.29.2 EB/apps \
+#    CUDA/12.5.0 \
+#    intel/2023.2.0 impi/2021.10.0 \
+#    hdf5/1.14.1-2 fftw/3.3.10 \
+#    OpenBLAS/0.3.24-GCC-13.2.0
 
 #module load \
 #    cmake/3.29.2 EB/apps \
@@ -44,7 +51,7 @@ download () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED ECTRANS"
     else
-	    error "==> FAILED TO CLONE ECTARNS"
+	    error "==> FAILED TO CLONE ECTRANS"
         error "    Make sure you're on login4."
         exit 1
     fi 
@@ -53,11 +60,25 @@ download () {
 
     # Pull ecBuild.
     git clone --branch "3.8.5" --single-branch https://github.com/ecmwf/ecbuild.git
-    success "==> SUCCESFULLY CLONED ECBUILD"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY CLONED ECBUILD"
+    else
+	    error "==> FAILED TO CLONE ECBUILD"
+        error "    Make sure you're on login4."
+        exit 1
+    fi 
 
     # Pull FIAT.
     git clone --branch "1.4.1" --single-branch https://github.com/ecmwf-ifs/fiat
-    success "==> SUCCESFULLY CLONED FIAT"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY CLONED FIAT"
+    else
+	    error "==> FAILED TO CLONE FIAT"
+        error "    Make sure you're on login4."
+        exit 1
+    fi 
 }
 
 # Build and install ecBuild.
@@ -73,13 +94,35 @@ _build_install_ecbuild () {
     info "==>\t ECBUILD.."
     "${SOURCEDIR}/ecbuild/bin/ecbuild" --prefix="${INSTALLDIR}/ecbuild" \
         "${SOURCEDIR}/ecbuild"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY BUILD ECBUILD WITH ECBUILD"
+    else
+	    error "==> FAILED TO BUILD ECBUILD WITH ECBUILD"
+        exit 1
+    fi 
+
+    # Make ecBuild.
     info "==>\t MAKE.."
     make 2>&1 | tee "${BUILDDIR}/ecbuild.log"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY MAKE ECBUILD"
+    else
+	    error "==> FAILED TO MAKE ECBUILD"
+        exit 1
+    fi 
 
     # Install ecBuild.
     info "==>\t MAKE INSTALL.."
     make install 2>&1 | tee "${INSTALLDIR}/ecbuild.log"
-    success "==> SUCCESFULLY INSTALLED ECBUILD"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY MAKE INSTALL ECBUILD"
+    else
+	    error "==> FAILED TO MAKE INSTALL ECBUILD"
+        exit 1
+    fi 
 }
 
 # Build and install FIAT.
@@ -96,13 +139,35 @@ _build_install_fiat () {
     ecbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FIAT_DIR}" -DENABLE_MPI=ON \
         -DENABLE_TESTS=OFF "${SOURCEDIR}/fiat"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY BUILD FIAT WITH ECBUILD"
+    else
+	    error "==> FAILED TO BUILD FIAT WITH ECBUILD"
+        exit 1
+    fi 
+
+    # Make FIAT.
     info "==>\t MAKE.."
     make -j16 2>&1 | tee "${BUILDDIR}/fiat.log"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY MAKE FIAT"
+    else
+	    error "==> FAILED TO MAKE FIAT"
+        exit 1
+    fi
 
     # Install FIAT.
     info "==>\t MAKE INSTALL.."
     make install 2>&1 | tee "${INSTALLDIR}/fiat.log"
-    success "==> SUCCESFULLY INSTALLED FIAT"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY MAKE INSTALL FIAT"
+    else
+	    error "==> FAILED TO MAKE INSTALL FIAT"
+        exit 1
+    fi 
 }
 
 # Build and install ecTrans.
@@ -122,19 +187,49 @@ _build_install_ectrans () {
         -DENABLE_ACCGPU=ON -DENABLE_TESTS=OFF -DENABLE_GPU_AWARE_MPI=ON \
         -DENABLE_CPU=ON -DENABLE_ETRANS=ON  -DENABLE_DOUBLE_PRECISION=ON \
         -DENABLE_SINGLE_PRECISION=OFF \
-        -DOpenMP_Fortran_FLAGS="-fopenacc" \
-        -DCMAKE_Fortran_FLAGS="-fopenacc" \
-        -DCMAKE_C_FLAGS="-fopenacc" \
         "${SOURCEDIR}/ectrans"
+#        -DOpenMP_Fortran_FLAGS="-fopenacc" \
+#        -DCMAKE_Fortran_FLAGS="-fopenacc" \
+#        -DCMAKE_C_FLAGS="-fopenacc" \
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY BUILD ECTRANS WITH ECBUILD"
+    else
+	    error "==> FAILED TO BUILD ECTRANS WITH ECBUILD"
+        exit 1
+    fi 
+
+    # Make ecTrans.
     info "==>\t MAKE (supposed to fail).."
     make -j32 2>&1 | tee "${BUILDDIR}/ectrans.log"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY FIRST MAKE ECTRANS"
+    else
+	    error "==> FAILED TO FIRST MAKE ECTRANS"
+        exit 1
+    fi 
+
     info "==>\t MAKE (again, should succeed).."
     make -j32 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY SECOND MAKE ECTRANS"
+    else
+	    error "==> FAILED TO SECOND MAKE ECTRANS"
+        exit 1
+    fi 
 
     # Install ecTrans.
     info "==>\t MAKE INSTALL.."
     make install 2>&1 | tee "${INSTALLDIR}/ectrans.log"
-    success "==> SUCCESFULLY INSTALLED ECTRANS"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY MAKE INSTALL ECTRANS"
+    else
+	    error "==> FAILED TO MAKE INSTALL ECTRANS"
+        exit 1
+    fi 
 }
 
 # Build and Install source files.
@@ -148,8 +243,8 @@ main () {
     # Set compilers for make/cmake.
     export FC90=ifort
     export FC=ifort
-    export CC=cc
-    export CXX=cc
+    export CC=nvcc
+    export CXX=nvcc
 
     # Export environment variables used during installation.
     export PATH=${PATH}:${INSTALLDIR}/ecbuild/bin/
