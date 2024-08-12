@@ -38,15 +38,64 @@ download () {
     # Remove sources/ and build/
     ./clean.sh
 
+    # Move into source dir.
+    cd "${SOURCEDIR}" || exit 1
+
+    # Pull ecBuild.
+    git clone --branch "3.8.5" --single-branch \
+        https://github.com/ecmwf/ecbuild.git "${ECBUILD_DIR}"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY CLONED ECBUILD"
+    else
+	    error "==> FAILED TO CLONE ECBUILD"
+        error "    Make sure you're on login4."
+        exit 1
+    fi 
+
+    # Pull eckit.
+    git clone --branch "1.26.4" --single-branch \
+        https://github.com/ecmwf/eckit.git "${ECKIT_DIR}"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY CLONED ECKIT"
+    else
+	    error "==> FAILED TO CLONE ECKIT"
+        error "    Make sure you're on login4."
+        exit 1
+    fi 
+
+    # Pull fckit.
+    git clone --branch "0.9.0" --single-branch \
+        https://github.com/ecmwf/fckit.git "${FCKIT_DIR}"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY CLONED FCKIT"
+    else
+	    error "==> FAILED TO CLONE FCKIT"
+        error "    Make sure you're on login4."
+        exit 1
+    fi 
+    
+    # Pull FIAT.
+    git clone --branch "1.4.1" --single-branch \
+        https://github.com/ecmwf-ifs/fiat.git "${FIAT_DIR}"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY CLONED FIAT"
+    else
+	    error "==> FAILED TO CLONE FIAT"
+        error "    Make sure you're on login4."
+        exit 1
+    fi 
+
     # Pull ecTrans.
     info "==> PULLING ECTRANS"
-    cd "${SOURCEDIR}" || exit 1
-    mkdir -p ectrans
-    cd ectrans || exit 1
+    mkdir -p ${ECTRANS_DIR}
+    cd ${ECTRANS_DIR} || exit 1
     git init
     git remote add origin https://github.com/ecmwf-ifs/ectrans
     git fetch --depth 1 origin c8c5c6100bb62b1d9ce15012a0722c0611992ae9
-
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED ECTRANS"
@@ -57,43 +106,21 @@ download () {
     fi 
     git checkout FETCH_HEAD 
     cd ..
-
-    # Pull ecBuild.
-    git clone --branch "3.8.5" --single-branch https://github.com/ecmwf/ecbuild.git
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED ECBUILD"
-    else
-	    error "==> FAILED TO CLONE ECBUILD"
-        error "    Make sure you're on login4."
-        exit 1
-    fi 
-
-    # Pull FIAT.
-    git clone --branch "1.4.1" --single-branch https://github.com/ecmwf-ifs/fiat
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED FIAT"
-    else
-	    error "==> FAILED TO CLONE FIAT"
-        error "    Make sure you're on login4."
-        exit 1
-    fi 
 }
 
 # Build and install ecBuild.
 _build_install_ecbuild () {
     # Build and Install ecBuild.
     info "==> INSTALLING ECBUILD.."
-    cd "${SOURCEDIR}/ecbuild" || exit 1
+    cd "${SOURCEDIR}/${ECBUILD_DIR}" || exit 1
 
     # Create build directory and build ecBuild.
-    rm -rf "${BUILDDIR:?}/ecbuild" "${INSTALLDIR:?}/ecbuild"
-    mkdir -p "${BUILDDIR}/ecbuild"
-    cd "${BUILDDIR}/ecbuild" || exit 1
+    rm -rf "${BUILDDIR:?}/${ECBUILD_DIR:?}" "${INSTALLDIR:?}/${ECBUILD_DIR:?}"
+    mkdir -p "${BUILDDIR}/${ECBUILD_DIR}"
+    cd "${BUILDDIR}/${ECBUILD_DIR}" || exit 1
     info "==>\t ECBUILD.."
-    "${SOURCEDIR}/ecbuild/bin/ecbuild" --prefix="${INSTALLDIR}/ecbuild" \
-        "${SOURCEDIR}/ecbuild"
+    "${SOURCEDIR}/${ECBUILD_DIR}/bin/ecbuild" --prefix="${INSTALLDIR}/${ECBUILD_DIR}" \
+        "${SOURCEDIR}/${ECBUILD_DIR}"
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD ECBUILD WITH ECBUILD"
@@ -125,11 +152,102 @@ _build_install_ecbuild () {
     fi 
 }
 
+# Build and install eckit.
+_build_install_eckit () {
+    # Build and Install ECKIT.
+    info "==> INSTALLING ECKIT.."
+    cd "${SOURCEDIR}/${ECKIT_DIR}" || exit 1
+    
+    # Create build directory and build eckit.
+    rm -rf "${BUILDDIR:?}/${ECKIT_DIR:?}" "${INSTALLDIR:?}/${ECKIT_DIR:?}"
+    mkdir -p "${BUILDDIR}/${ECKIT_DIR}"
+    cd "${BUILDDIR}/${ECKIT_DIR}" || exit 1
+    info "==>\t ECBUILD.."
+    ecbuild -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${ECKIT_DIR}" -DENABLE_MPI=ON \
+        -DENABLE_TESTS=OFF -DENABLE_ECKIT_CMD=OFF -DENABLE_ECKIT_SQL=OFF \
+        -DENABLE_OMP=OFF "${SOURCEDIR}/${ECKIT_DIR}"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY BUILD ECKIT WITH ECBUILD"
+    else
+	    error "==> FAILED TO BUILD ECKIT WITH ECBUILD"
+        exit 1
+    fi 
+
+    # Make eckit.
+    info "==>\t MAKE.."
+    make -j10 2>&1 | tee "${BUILDDIR}/eckit.log"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY MAKE ECKIT"
+    else
+	    error "==> FAILED TO MAKE ECKIT"
+        exit 1
+    fi
+
+    # Install eckit.
+    info "==>\t MAKE INSTALL.."
+    make install 2>&1 | tee "${INSTALLDIR}/eckit.log"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY MAKE INSTALL ECKIT"
+    else
+	    error "==> FAILED TO MAKE INSTALL ECKIT"
+        exit 1
+    fi
+}
+
+# Build and install fckit.
+_build_install_fckit () {
+    # Build and Install FCKIT.
+    info "==> INSTALLING FCKIT.."
+    cd "${SOURCEDIR}/${FCKIT_DIR}" || exit 1
+    
+    # Create build directory and build fckit.
+    rm -rf "${BUILDDIR:?}/${FCKIT_DIR:?}" "${INSTALLDIR:?}/${FCKIT_DIR:?}"
+    mkdir -p "${BUILDDIR}/${FCKIT_DIR}"
+    cd "${BUILDDIR}/${FCKIT_DIR}" || exit 1
+    info "==>\t ECBUILD.."
+    ecbuild -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FCKIT_DIR}" -DENABLE_TESTS=OFF \
+        "${SOURCEDIR}/${FCKIT_DIR}"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY BUILD FCKIT WITH ECBUILD"
+    else
+	    error "==> FAILED TO BUILD FCKIT WITH ECBUILD"
+        exit 1
+    fi 
+
+    # Make fckit.
+    info "==>\t MAKE.."
+    make 2>&1 | tee "${BUILDDIR}/fckit.log"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY MAKE FCKIT"
+    else
+	    error "==> FAILED TO MAKE FCKIT"
+        exit 1
+    fi
+
+    # Install fckit.
+    info "==>\t MAKE INSTALL.."
+    make install 2>&1 | tee "${INSTALLDIR}/fckit.log"
+    retval=$?
+    if [[ $retval -eq 0 ]]; then
+    	success "==> SUCCESFULLY MAKE INSTALL FCKIT"
+    else
+	    error "==> FAILED TO MAKE INSTALL FCKIT"
+        exit 1
+    fi
+}
+
 # Build and install FIAT.
 _build_install_fiat () {
     # Build and Install FIAT.
     info "==> INSTALLING FIAT.."
-    cd "${SOURCEDIR}/fiat" || exit 1
+    cd "${SOURCEDIR}/${FIAT_DIR}" || exit 1
     
     # Create build directory and build FIAT.
     rm -rf "${BUILDDIR:?}/${FIAT_DIR:?}" "${INSTALLDIR:?}/${FIAT_DIR:?}"
@@ -138,7 +256,7 @@ _build_install_fiat () {
     info "==>\t ECBUILD.."
     ecbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FIAT_DIR}" -DENABLE_MPI=ON \
-        -DENABLE_TESTS=OFF "${SOURCEDIR}/fiat"
+        -DENABLE_TESTS=OFF "${SOURCEDIR}/${FIAT_DIR}"
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD FIAT WITH ECBUILD"
@@ -187,7 +305,7 @@ _build_install_ectrans () {
         -DENABLE_ACCGPU=ON -DENABLE_TESTS=OFF -DENABLE_GPU_AWARE_MPI=ON \
         -DENABLE_CPU=ON -DENABLE_ETRANS=ON  -DENABLE_DOUBLE_PRECISION=ON \
         -DENABLE_SINGLE_PRECISION=OFF \
-        "${SOURCEDIR}/ectrans"
+        "${SOURCEDIR}/${ECTRANS_DIR}"
 #        -DOpenMP_Fortran_FLAGS="-fopenacc" \
 #        -DCMAKE_Fortran_FLAGS="-fopenacc" \
 #        -DCMAKE_C_FLAGS="-fopenacc" \
@@ -235,6 +353,8 @@ _build_install_ectrans () {
 # Build and Install source files.
 build_install_all () {
     _build_install_ecbuild
+    _build_install_eckit
+    _build_install_fckit
     _build_install_fiat
     _build_install_ectrans
 }
@@ -279,6 +399,14 @@ main () {
                         "ecbuild")
                             info "==> install.sh:  Building ecBuild"
                             _build_install_ecbuild
+                            ;;
+                        "eckit")
+                            info "==> install.sh:  Building eckit"
+                            _build_install_eckit
+                            ;;
+                        "fckit")
+                            info "==> install.sh:  Building fckit"
+                            _build_install_fckit
                             ;;
                         "fiat")
                             info "==> install.sh:  Building FIAT"

@@ -15,6 +15,9 @@ export INSTALLDIR=${BASEDIR}/../src/install
 export RESULTS_DIR=${BASEDIR}/../results
 
 # Export application specific directories.
+export ECBUILD_DIR="ecbuild"
+export ECKIT_DIR="eckit"
+export FCKIT_DIR="fckit"
 export FIAT_DIR="fiat"
 export ECTRANS_DIR="ectrans"
 
