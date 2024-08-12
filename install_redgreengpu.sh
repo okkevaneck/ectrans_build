@@ -5,6 +5,9 @@
 #   e.g. "./install lumi". Options are [lumi|leonardo|mn5].
 # ------------------------------------------------------------------------------
 
+# Set pipefail to capture non-zero exit codes when also writing to logs.
+set -o pipefail
+
 # Load helpers for color printing.
 source helpers/helpers.sh
 
@@ -27,9 +30,7 @@ download () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED ECBUILD"
     else
-	    error "==> FAILED TO CLONE ECBUILD"
-        error "    Make sure you're on login4."
-        exit 1
+	    fatal "==> FAILED TO CLONE ECBUILD\n\tMake sure you're on login4."
     fi 
 
     # Pull eckit.
@@ -39,9 +40,7 @@ download () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED ECKIT"
     else
-	    error "==> FAILED TO CLONE ECKIT"
-        error "    Make sure you're on login4."
-        exit 1
+	    fatal "==> FAILED TO CLONE ECKIT\n\tMake sure you're on login4."
     fi 
 
     # Pull fckit.
@@ -51,9 +50,7 @@ download () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED FCKIT"
     else
-	    error "==> FAILED TO CLONE FCKIT"
-        error "    Make sure you're on login4."
-        exit 1
+	    fatal "==> FAILED TO CLONE FCKIT\n\tMake sure you're on login4."
     fi 
     
     # Pull FIAT.
@@ -63,9 +60,7 @@ download () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED FIAT"
     else
-	    error "==> FAILED TO CLONE FIAT"
-        error "    Make sure you're on login4."
-        exit 1
+	    fatal "==> FAILED TO CLONE FIAT\n\tMake sure you're on login4."
     fi 
 
     # Pull ecTrans.
@@ -79,9 +74,7 @@ download () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED ECTRANS"
     else
-	    error "==> FAILED TO CLONE ECTRANS"
-        error "    Make sure you're on login4."
-        exit 1
+	    fatal "==> FAILED TO CLONE ECTRANS\n\tMake sure you're on login4."
     fi 
     git checkout FETCH_HEAD 
     cd ..
@@ -104,8 +97,7 @@ _build_install_ecbuild () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD ECBUILD WITH ECBUILD"
     else
-	    error "==> FAILED TO BUILD ECBUILD WITH ECBUILD"
-        exit 1
+	    fatal "==> FAILED TO BUILD ECBUILD WITH ECBUILD"
     fi 
 
     # Make ecBuild.
@@ -115,8 +107,7 @@ _build_install_ecbuild () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY MAKE ECBUILD"
     else
-	    error "==> FAILED TO MAKE ECBUILD"
-        exit 1
+	    fatal "==> FAILED TO MAKE ECBUILD"
     fi 
 
     # Install ecBuild.
@@ -126,8 +117,7 @@ _build_install_ecbuild () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY MAKE INSTALL ECBUILD"
     else
-	    error "==> FAILED TO MAKE INSTALL ECBUILD"
-        exit 1
+	    fatal "==> FAILED TO MAKE INSTALL ECBUILD"
     fi 
 }
 
@@ -150,8 +140,7 @@ _build_install_eckit () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD ECKIT WITH ECBUILD"
     else
-	    error "==> FAILED TO BUILD ECKIT WITH ECBUILD"
-        exit 1
+	    fatal "==> FAILED TO BUILD ECKIT WITH ECBUILD"
     fi 
 
     # Make eckit.
@@ -161,8 +150,7 @@ _build_install_eckit () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY MAKE ECKIT"
     else
-	    error "==> FAILED TO MAKE ECKIT"
-        exit 1
+	    fatal "==> FAILED TO MAKE ECKIT"
     fi
 
     # Install eckit.
@@ -172,8 +160,7 @@ _build_install_eckit () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY MAKE INSTALL ECKIT"
     else
-	    error "==> FAILED TO MAKE INSTALL ECKIT"
-        exit 1
+	    fatal "==> FAILED TO MAKE INSTALL ECKIT"
     fi
 }
 
@@ -195,8 +182,7 @@ _build_install_fckit () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD FCKIT WITH ECBUILD"
     else
-	    error "==> FAILED TO BUILD FCKIT WITH ECBUILD"
-        exit 1
+	    fatal "==> FAILED TO BUILD FCKIT WITH ECBUILD"
     fi 
 
     # Make fckit.
@@ -206,8 +192,7 @@ _build_install_fckit () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY MAKE FCKIT"
     else
-	    error "==> FAILED TO MAKE FCKIT"
-        exit 1
+	    fatal "==> FAILED TO MAKE FCKIT"
     fi
 
     # Install fckit.
@@ -217,8 +202,7 @@ _build_install_fckit () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY MAKE INSTALL FCKIT"
     else
-	    error "==> FAILED TO MAKE INSTALL FCKIT"
-        exit 1
+	    fatal "==> FAILED TO MAKE INSTALL FCKIT"
     fi
 }
 
@@ -240,8 +224,7 @@ _build_install_fiat () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD FIAT WITH ECBUILD"
     else
-	    error "==> FAILED TO BUILD FIAT WITH ECBUILD"
-        exit 1
+	    fatal "==> FAILED TO BUILD FIAT WITH ECBUILD"
     fi 
 
     # Make FIAT.
@@ -251,8 +234,7 @@ _build_install_fiat () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY MAKE FIAT"
     else
-	    error "==> FAILED TO MAKE FIAT"
-        exit 1
+	    fatal "==> FAILED TO MAKE FIAT"
     fi
 
     # Install FIAT.
@@ -262,8 +244,7 @@ _build_install_fiat () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY MAKE INSTALL FIAT"
     else
-	    error "==> FAILED TO MAKE INSTALL FIAT"
-        exit 1
+	    fatal "==> FAILED TO MAKE INSTALL FIAT"
     fi 
 }
 
@@ -292,8 +273,7 @@ _build_install_ectrans () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD ECTRANS WITH ECBUILD"
     else
-	    error "==> FAILED TO BUILD ECTRANS WITH ECBUILD"
-        exit 1
+	    fatal "==> FAILED TO BUILD ECTRANS WITH ECBUILD"
     fi 
 
     # Make ecTrans.
@@ -303,8 +283,7 @@ _build_install_ectrans () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY FIRST MAKE ECTRANS"
     else
-	    error "==> FAILED TO FIRST MAKE ECTRANS"
-        exit 1
+	    fatal "==> FAILED TO FIRST MAKE ECTRANS"
     fi 
 
     info "==>\t MAKE (again, should succeed).."
@@ -313,8 +292,7 @@ _build_install_ectrans () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY SECOND MAKE ECTRANS"
     else
-	    error "==> FAILED TO SECOND MAKE ECTRANS"
-        exit 1
+	    fatal "==> FAILED TO SECOND MAKE ECTRANS"
     fi 
 
     # Install ecTrans.
@@ -324,8 +302,7 @@ _build_install_ectrans () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY MAKE INSTALL ECTRANS"
     else
-	    error "==> FAILED TO MAKE INSTALL ECTRANS"
-        exit 1
+	    fatal "==> FAILED TO MAKE INSTALL ECTRANS"
     fi 
 }
 
@@ -361,6 +338,10 @@ detect_and_load_machine() {
             export FC=ftn
             export CC=cc
             export CXX=cc
+
+            # Set toolchain.
+            export TOOLCHAIN_FILE=${BASEDIR}/../toolchains/toolchain_lumi.cmake
+            export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
             ;;
         "leonardo")
             ;;
@@ -395,7 +376,6 @@ detect_and_load_machine() {
             ;;
         *)
             fatal "Passed argument '$machine' not in [lumi|leonardo|mn5]."
-            exit 1
             ;;
     esac
 
@@ -415,6 +395,22 @@ main () {
 
     # Add ecBuild bin to PATH for installation process.
     export PATH=${PATH}:${INSTALLDIR}/ecbuild/bin/
+
+    # Export paths for linking the libraries.
+    export BIN_PATH="${INSTALLDIR}/${ECBUILD_DIR}/bin"
+    export INCLUDE_PATH="${INSTALLDIR}/${ECBUILD_DIR}/include"
+    export INSTALL_PATH="${INSTALLDIR}/${ECBUILD_DIR}/"
+    export ECBUILD_PATH="${INSTALLDIR}/${ECBUILD_DIR}/"
+    export ECKIT_PATH="${INSTALLDIR}/${ECKIT_DIR}/"
+    export FCKIT_PATH="${INSTALLDIR}/${FCKIT_DIR}/"
+    export FCKIT_PATH="${INSTALLDIR}/${FIAT_DIR}/"
+
+    # Extend LIB_PATH with each component.
+    export LIB_PATH="$LIBPATH:${INSTALLDIR}/${ECBUILD_DIR}/lib:${INSTALLDIR}/${ECBUILD_DIR}/lib64"
+    export LIB_PATH="$LIBPATH:${INSTALLDIR}/${ECKIT_DIR}/lib:${INSTALLDIR}/${ECKIT_DIR}/lib64"
+    export LIB_PATH="$LIBPATH:${INSTALLDIR}/${FCKIT_DIR}/lib:${INSTALLDIR}/${FCKIT_DIR}/lib64"
+    export LIB_PATH="$LIBPATH:${INSTALLDIR}/${FCKIT_DIR}/lib:${INSTALLDIR}/${FCKIT_DIR}/lib64"
+    export LIB_PATH="$LIBPATH:${INSTALLDIR}/${FIAT_DIR}/lib:${INSTALLDIR}/${FIAT_DIR}/lib64"
 
     # Create directories for the installation process.
     mkdir -p "${SOURCEDIR}" "${BUILDDIR}" "${INSTALLDIR}"
