@@ -347,6 +347,20 @@ detect_and_load_machine() {
     # Parse machine name and act accordingly.
     case $machine in
         "lumi")
+            # Load modules.
+            module purge
+            module load LUMI/23.03 partition/G PrgEnv-cray cpe/23.09 craype-x86-trento \
+                craype-accel-amd-gfx90a
+            module load cray-mpich cray-libsci cray-fftw cray-python
+            module load cray-hdf5-parallel cray-netcdf-hdf5parallel
+            module load buildtools
+            module load rocm/5.2.3
+
+            # Set compilers for make/cmake.
+            export FC90=ftn
+            export FC=ftn
+            export CC=cc
+            export CXX=cc
             ;;
         "leonardo")
             ;;
@@ -380,14 +394,14 @@ detect_and_load_machine() {
             export CXX=nvcc
             ;;
         *)
-            error "Passed argument '$machine' not in [lumi|leonardo|mn5]."
+            fatal "Passed argument '$machine' not in [lumi|leonardo|mn5]."
             exit 1
             ;;
     esac
 
     # Assert that the required variables are set.
     if [ -z "$FC90" ] || [ -z "$FC" ] || [ -z "$CC" ] || [ -z "$CXX" ]; then
-        error "Not all compilers are set in 'detect_and_load_machine()'."
+        fatal "Not all compilers are set in 'detect_and_load_machine()'."
         exit 1
     fi
 
@@ -406,14 +420,14 @@ main () {
     mkdir -p "${SOURCEDIR}" "${BUILDDIR}" "${INSTALLDIR}"
 
     # If no arguments passed, download, build, and install everything.
-    if [ $# -eq 0 ]; then
+    if [ $# -le 1 ]; then
         info "No arguments given, so doing complete new install.."
         ./clean.sh all
         download
         build_install_all
     else
-        # Else parse every passed argument.
-        for var in "$@"; do
+        # Else parse all other passed arguments.
+        for var in "${@:2}"; do
             arrVar=(${var//:/ })
             instruction=${arrVar[0]}
             program=${arrVar[1]}
