@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # ------------------------------------------------------------------------------
 # This file downloads, builds, and installs the ecTrans dwarf.
+# When installing, pass a supported supercomputer name as the first argument,
+#   e.g. "./install lumi". Options are [lumi|leonardo|mn5].
 # ------------------------------------------------------------------------------
 
 # Load helpers for color printing.
@@ -9,29 +11,6 @@ source helpers/helpers.sh
 # Load directory structure for installation paths.
 source helpers/dirs.sh
 
-# Setup required modules.
-module load \
-    cmake/3.29.2 EB/apps \
-    nvidia-hpc-sdk/24.3 \
-    intel/2023.2.0 \
-    impi/2021.10.0 fftw/3.3.10
-
-
-#module load \
-#    cmake/3.29.2 EB/apps \
-#    CUDA/12.5.0 \
-#    intel/2023.2.0 impi/2021.10.0 \
-#    hdf5/1.14.1-2 fftw/3.3.10 \
-#    OpenBLAS/0.3.24-GCC-13.2.0
-
-#module load \
-#    cmake/3.29.2 EB/apps \
-#    CUDA/12.5.0 \
-#    intel/2023.2.0 openmpi/4.1.5-gcc hdf5/1.14.1-2-gcc-ompi \
-#    fftw/3.3.10-gcc-ompi OpenBLAS/0.3.24-GCC-13.2.0
-
-#mpi/2021.11 openmpi/4.1.5-gcc
-module list &> loaded_mods.txt
 
 # Remove source and build files, and download fresh version.
 download () {
@@ -350,7 +329,7 @@ _build_install_ectrans () {
     fi 
 }
 
-# Build and Install source files.
+# Build and install source files.
 build_install_all () {
     _build_install_ecbuild
     _build_install_eckit
@@ -359,17 +338,69 @@ build_install_all () {
     _build_install_ectrans
 }
 
-main () {
-    # Set compilers for make/cmake.
-    export FC90=ifort
-    export FC=ifort
-    export CC=nvcc
-    export CXX=nvcc
+# Parse what supercomputer to install on, set required variables and load 
+# modules. First argument is the name of the supercomputer.
+detect_and_load_machine() {
+    #First arg is machine name.
+    machine=$1
+    
+    # Parse machine name and act accordingly.
+    case $machine in
+        "lumi")
+            ;;
+        "leonardo")
+            ;;
+        "mn5")
+            # Setup required modules.
+            module load \
+                cmake/3.29.2 EB/apps \
+                nvidia-hpc-sdk/24.3 \
+                intel/2023.2.0 \
+                impi/2021.10.0 fftw/3.3.10
 
-    # Export environment variables used during installation.
+            #module load \
+            #    cmake/3.29.2 EB/apps \
+            #    CUDA/12.5.0 \
+            #    intel/2023.2.0 impi/2021.10.0 \
+            #    hdf5/1.14.1-2 fftw/3.3.10 \
+            #    OpenBLAS/0.3.24-GCC-13.2.0
+
+            #module load \
+            #    cmake/3.29.2 EB/apps \
+            #    CUDA/12.5.0 \
+            #    intel/2023.2.0 openmpi/4.1.5-gcc hdf5/1.14.1-2-gcc-ompi \
+            #    fftw/3.3.10-gcc-ompi OpenBLAS/0.3.24-GCC-13.2.0
+           
+            #mpi/2021.11 openmpi/4.1.5-gcc
+
+            # Set compilers for make/cmake.
+            export FC90=ifort
+            export FC=ifort
+            export CC=nvcc
+            export CXX=nvcc
+            ;;
+        *)
+            error "Passed argument '$machine' not in [lumi|leonardo|mn5]."
+            exit 1
+            ;;
+    esac
+
+    # Assert that the required variables are set.
+    if [ -z "$FC90" ] || [ -z "$FC" ] || [ -z "$CC" ] || [ -z "$CXX" ]; then
+        error "Not all compilers are set in 'detect_and_load_machine()'."
+        exit 1
+    fi
+
+    # Output loaded modules to log.
+    module list 2>&1 | tee "install.log"
+}
+
+main () {
+    # Detect machine, set variables, and load modules.
+    detect_and_load_machine $1
+
+    # Add ecBuild bin to PATH for installation process.
     export PATH=${PATH}:${INSTALLDIR}/ecbuild/bin/
-    # export TOOLCHAIN_FILE=toolchains/toolchain_mn5.cmake
-    # export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
 
     # Create directories for the installation process.
     mkdir -p "${SOURCEDIR}" "${BUILDDIR}" "${INSTALLDIR}"
@@ -433,4 +464,3 @@ main () {
 
 # Call main as entrypoint of script.
 main "$@"
-
