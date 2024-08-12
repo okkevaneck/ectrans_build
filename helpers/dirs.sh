@@ -20,4 +20,3 @@ export ECKIT_DIR="eckit"
 export FCKIT_DIR="fckit"
 export FIAT_DIR="fiat"
 export ECTRANS_DIR="ectrans"
-
