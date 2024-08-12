@@ -177,7 +177,7 @@ _build_install_fckit () {
     info "==>\t ECBUILD.."
     ecbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FCKIT_DIR}" -DENABLE_TESTS=OFF \
-        "${SOURCEDIR}/${FCKIT_DIR}"
+        -DENABLE_ECKIT=OFF "${SOURCEDIR}/${FCKIT_DIR}"
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD FCKIT WITH ECBUILD"
@@ -266,9 +266,6 @@ _build_install_ectrans () {
         -DENABLE_CPU=ON -DENABLE_ETRANS=ON -DENABLE_DOUBLE_PRECISION=ON \
         -DENABLE_SINGLE_PRECISION=OFF \
         "${SOURCEDIR}/${ECTRANS_DIR}"
-#        -DOpenMP_Fortran_FLAGS="-fopenacc" \
-#        -DCMAKE_Fortran_FLAGS="-fopenacc" \
-#        -DCMAKE_C_FLAGS="-fopenacc" \
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD ECTRANS WITH ECBUILD"
@@ -391,7 +388,9 @@ detect_and_load_machine() {
 
 main () {
     # Detect machine, set variables, and load modules.
+    info "==> install.sh:  Detecting machine and setting up environment.."
     detect_and_load_machine $1
+    success "==> install.sh:  Succesfully set up environment."
 
     # Export paths for linking the libraries.
     export BIN_PATH="${INSTALLDIR}/${ECBUILD_DIR}/bin"
@@ -419,7 +418,7 @@ main () {
 
     # If no arguments passed, download, build, and install everything.
     if [ $# -le 1 ]; then
-        info "No arguments given, so doing complete new install.."
+        info "==> install.sh:  No arguments given, so doing complete new install.."
         ./clean.sh all
         download
         build_install_all
@@ -467,7 +466,7 @@ main () {
                     esac
                     ;;
                 *)
-                    info "Instruction '$instruction' not found.."
+                    info "==> install.sh:  Instruction '$instruction' not found.."
                     ;;
                 esac
         done
