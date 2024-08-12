@@ -229,7 +229,7 @@ _build_install_fiat () {
 
     # Make FIAT.
     info "==>\t MAKE.."
-    make -j16 2>&1 | tee "${BUILDDIR}/fiat.log"
+    make 2>&1 | tee "${BUILDDIR}/fiat.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY MAKE FIAT"
@@ -263,7 +263,7 @@ _build_install_ectrans () {
         -Dfiat_ROOT="${INSTALLDIR}/${FIAT_DIR}" \
         -DENABLE_FFTW=ON -DENABLE_GPU=ON -DENABLE_OMPGPU=OFF \
         -DENABLE_ACCGPU=ON -DENABLE_TESTS=OFF -DENABLE_GPU_AWARE_MPI=ON \
-        -DENABLE_CPU=ON -DENABLE_ETRANS=ON  -DENABLE_DOUBLE_PRECISION=ON \
+        -DENABLE_CPU=ON -DENABLE_ETRANS=ON -DENABLE_DOUBLE_PRECISION=ON \
         -DENABLE_SINGLE_PRECISION=OFF \
         "${SOURCEDIR}/${ECTRANS_DIR}"
 #        -DOpenMP_Fortran_FLAGS="-fopenacc" \
@@ -281,9 +281,9 @@ _build_install_ectrans () {
     make -j32 2>&1 | tee "${BUILDDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY FIRST MAKE ECTRANS"
+    	success "==> SUCCESFULLY FIRST MAKE ECTRANS\n\tExpected to fail.."
     else
-	    fatal "==> FAILED TO FIRST MAKE ECTRANS"
+	    info "==> FAILED TO FIRST MAKE ECTRANS\n\tAs expected!"
     fi 
 
     info "==>\t MAKE (again, should succeed).."
@@ -393,9 +393,6 @@ main () {
     # Detect machine, set variables, and load modules.
     detect_and_load_machine $1
 
-    # Add ecBuild bin to PATH for installation process.
-    export PATH=${PATH}:${INSTALLDIR}/ecbuild/bin/
-
     # Export paths for linking the libraries.
     export BIN_PATH="${INSTALLDIR}/${ECBUILD_DIR}/bin"
     export INCLUDE_PATH="${INSTALLDIR}/${ECBUILD_DIR}/include"
@@ -406,11 +403,16 @@ main () {
     export FCKIT_PATH="${INSTALLDIR}/${FIAT_DIR}/"
 
     # Extend LIB_PATH with each component.
-    export LIB_PATH="$LIBPATH:${INSTALLDIR}/${ECBUILD_DIR}/lib:${INSTALLDIR}/${ECBUILD_DIR}/lib64"
-    export LIB_PATH="$LIBPATH:${INSTALLDIR}/${ECKIT_DIR}/lib:${INSTALLDIR}/${ECKIT_DIR}/lib64"
-    export LIB_PATH="$LIBPATH:${INSTALLDIR}/${FCKIT_DIR}/lib:${INSTALLDIR}/${FCKIT_DIR}/lib64"
-    export LIB_PATH="$LIBPATH:${INSTALLDIR}/${FCKIT_DIR}/lib:${INSTALLDIR}/${FCKIT_DIR}/lib64"
-    export LIB_PATH="$LIBPATH:${INSTALLDIR}/${FIAT_DIR}/lib:${INSTALLDIR}/${FIAT_DIR}/lib64"
+    export LIB_PATH="${LIB_PATH}:${INSTALLDIR}/${ECBUILD_DIR}/lib:${INSTALLDIR}/${ECBUILD_DIR}/lib64"
+    export LIB_PATH="${LIB_PATH}:${INSTALLDIR}/${ECKIT_DIR}/lib:${INSTALLDIR}/${ECKIT_DIR}/lib64"
+    export LIB_PATH="${LIB_PATH}:${INSTALLDIR}/${FCKIT_DIR}/lib:${INSTALLDIR}/${FCKIT_DIR}/lib64"
+    export LIB_PATH="${LIB_PATH}:${INSTALLDIR}/${FIAT_DIR}/lib:${INSTALLDIR}/${FIAT_DIR}/lib64"
+
+    # Extend PATH with bin paths.
+    export PATH="${PATH}:${INSTALLDIR}/${ECBUILD_DIR}/bin/"
+    export PATH="${PATH}:${INSTALLDIR}/${ECKIT_DIR}/bin/"
+    export PATH="${PATH}:${INSTALLDIR}/${FCKIT_DIR}/bin/"
+    export PATH="${PATH}:${INSTALLDIR}/${FIAT_DIR}/bin/"
 
     # Create directories for the installation process.
     mkdir -p "${SOURCEDIR}" "${BUILDDIR}" "${INSTALLDIR}"
