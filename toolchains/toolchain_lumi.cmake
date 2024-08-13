@@ -20,7 +20,6 @@ set( ENABLE_USE_STMT_FUNC ON CACHE STRING "" )
 set( ENABLE_OMP ON CACHE STRING "" )
 set( OpenMP_C_FLAGS "-fopenmp" CACHE STRING "" )
 set( OpenMP_Fortran_FLAGS "-fopenmp" CACHE STRING "" )
-set( CMAKE_EXE_LINKER_FLAGS "-fopenmp" CACHE STRING "" )
 
 ####################################################################
 # OpenACC FLAGS

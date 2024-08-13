@@ -10,7 +10,7 @@
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8
 #SBATCH --ntasks=8
-#SBATCH --time=0:01:30
+#SBATCH --time=0:10:00
 
 # Load helpers for color printing.
 source ../helpers/helpers.sh
@@ -19,7 +19,7 @@ source ../helpers/helpers.sh
 source ../helpers/dirs.sh
 
 # Set binary and results directory name to ENV value or default.
-[ -z "$BINARY" ] && BINARY="ectrans-lam-benchmark-gpu-dp-acc"
+[ -z "$BINARY" ] && BINARY="ectrans-benchmark-cpu-dp"
 [ -z "$RESDIR" ] && RESDIR="sbatch"
 
 # Set runtime arguments to ENV value or default.
@@ -27,8 +27,8 @@ source ../helpers/dirs.sh
 [ -z "$NFLD" ] && NFLD=1
 [ -z "$NLEV" ] && NLEV=10
 [ -z "$NITER" ] && NITER=10
-[ -z "$NLAT" ] && NLAT=128
-[ -z "$NLON" ] && NLON=128
+#[ -z "$NLAT" ] && NLAT=128
+#[ -z "$NLON" ] && NLON=128
 
 # Create "select_gpu" script as indicated by Lumi documentation.
 SELECT_GPU_NAME=./select_gpu_sbatch
@@ -56,8 +56,8 @@ rm -rf "$RESULTS"
 mkdir -p "$RESULTS"
 
 # Run ecTrans with given arguments.
-ARGS="--nproma $NPROMA --vordiv --scders --uvders --nfld $NFLD --nlev $NLEV \
-        --norms --niter $NITER --nlat $NLAT --nlon $NLON"
+ARGS="--nproma $NPROMA --vordiv --scders --uvders --nfld $NFLD \
+        --norms --niter $NITER"
 srun --cpu-bind=${CPU_BIND} --output="$RESULTS/out.%j.%t" \
         --error="$RESULTS/err.%j.%t" --input=none "$SELECT_GPU_NAME" -- \
         "${INSTALLDIR}/${ECTRANS_DIR}/bin/${BINARY}" "${ARGS}"

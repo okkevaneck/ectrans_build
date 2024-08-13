@@ -24,60 +24,75 @@ download () {
     cd "${SOURCEDIR}" || exit 1
 
     # Pull ecBuild.
+    info "==> PULLING ECBUILD" | tee "${SOURCEDIR}/ecbuild.log"
     git clone --branch "3.8.5" --single-branch \
-        https://github.com/ecmwf/ecbuild.git "${ECBUILD_DIR}"
+        https://github.com/ecmwf/ecbuild.git "${ECBUILD_DIR}" \
+        | tee -a "${SOURCEDIR}/ecbuild.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED ECBUILD"
+    	success "==> SUCCESFULLY CLONED ECBUILD" \
+            | tee -a "${SOURCEDIR}/ecbuild.log"
     else
 	    fatal "==> FAILED TO CLONE ECBUILD."
     fi 
 
     # Pull eckit.
+    info "==> PULLING ECKIT" | tee "${SOURCEDIR}/eckit.log"
     git clone --branch "1.26.4" --single-branch \
-        https://github.com/ecmwf/eckit.git "${ECKIT_DIR}"
+        https://github.com/ecmwf/eckit.git "${ECKIT_DIR}" \
+        | tee -a "${SOURCEDIR}/eckit.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED ECKIT"
+    	success "==> SUCCESFULLY CLONED ECKIT" \
+            | tee -a "${SOURCEDIR}/eckit.log"
     else
 	    fatal "==> FAILED TO CLONE ECKIT"
     fi 
 
     # Pull the 4d812b9 commit fckit.
+    info "==> PULLING FCKIT" | tee "${SOURCEDIR}/fckit.log"
     mkdir -p ${FCKIT_DIR}
     cd ${FCKIT_DIR} || exit 1
-    git init
-    git remote add origin https://github.com/ecmwf/fckit.git
-    git fetch --depth 1 origin 4d812b9cb5721dae5d03ed8c906059d52f5e5411
+    git init | tee -a "${SOURCEDIR}/fckit.log"
+    git remote add origin https://github.com/ecmwf/fckit.git \
+        | tee -a "${SOURCEDIR}/fckit.log"
+    git fetch --depth 1 origin 4d812b9cb5721dae5d03ed8c906059d52f5e5411 \
+        | tee -a "${SOURCEDIR}/fckit.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED FCKIT"
+    	success "==> SUCCESFULLY CLONED FCKIT" \
+            | tee -a "${SOURCEDIR}/fckit.log"
     else
 	    fatal "==> FAILED TO CLONE FCKIT."
     fi 
-    git checkout FETCH_HEAD 
+    git checkout FETCH_HEAD | tee -a "${SOURCEDIR}/fckit.log"
     cd ..
 
     # Pull FIAT.
+    info "==> PULLING FIAT" | tee "${SOURCEDIR}/fiat.log"
     git clone --branch "1.4.1" --single-branch \
-        https://github.com/ecmwf-ifs/fiat.git "${FIAT_DIR}"
+        https://github.com/ecmwf-ifs/fiat.git "${FIAT_DIR}" \
+        | tee -a "${SOURCEDIR}/fiat.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED FIAT"
+    	success "==> SUCCESFULLY CLONED FIAT" | tee -a "${SOURCEDIR}/fiat.log"
     else
 	    fatal "==> FAILED TO CLONE FIAT"
     fi
 
     # Pull the c8c5c61 commit of ecTrans.
-    info "==> PULLING ECTRANS"
+    info "==> PULLING ECTRANS" | tee "${SOURCEDIR}/ectrans.log"
     mkdir -p ${ECTRANS_DIR}
     cd ${ECTRANS_DIR} || exit 1
-    git init
-    git remote add origin https://github.com/ecmwf-ifs/ectrans.git
-    git fetch --depth 1 origin c8c5c6100bb62b1d9ce15012a0722c0611992ae9
+    git init | tee -a "${SOURCEDIR}/ectrans.log"
+    git remote add origin https://github.com/ecmwf-ifs/ectrans.git \
+        | tee -a "${SOURCEDIR}/ectrans.log"
+    git fetch --depth 1 origin c8c5c6100bb62b1d9ce15012a0722c0611992ae9 \
+        | tee -a "${SOURCEDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED ECTRANS"
+    	success "==> SUCCESFULLY CLONED ECTRANS" \
+            | tee -a "${SOURCEDIR}/ectrans.log"
     else
 	    fatal "==> FAILED TO CLONE ECTRANS."
     fi 
@@ -96,21 +111,24 @@ _build_install_ecbuild () {
     mkdir -p "${BUILDDIR}/${ECBUILD_DIR}"
     cd "${BUILDDIR}/${ECBUILD_DIR}" || exit 1
     info "==>\t ECBUILD.."
-    "${SOURCEDIR}/${ECBUILD_DIR}/bin/ecbuild" --prefix="${INSTALLDIR}/${ECBUILD_DIR}" \
-        "${SOURCEDIR}/${ECBUILD_DIR}"
+    "${SOURCEDIR}/${ECBUILD_DIR}/bin/ecbuild" \
+        --prefix="${INSTALLDIR}/${ECBUILD_DIR}" "${SOURCEDIR}/${ECBUILD_DIR}" \
+        | tee "${BUILDDIR}/ecbuild.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY BUILD ECBUILD WITH ECBUILD"
+    	success "==> SUCCESFULLY BUILD ECBUILD WITH ECBUILD" \
+            | tee -a "${BUILDDIR}/ecbuild.log"
     else
 	    fatal "==> FAILED TO BUILD ECBUILD WITH ECBUILD"
     fi 
 
     # Make ecBuild.
-    info "==>\t MAKE.."
-    make 2>&1 | tee "${BUILDDIR}/ecbuild.log"
+    info "==>\t MAKE.." | tee -a "${BUILDDIR}/ecbuild.log"
+    make 2>&1 | tee -a "${BUILDDIR}/ecbuild.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE ECBUILD"
+    	success "==> SUCCESFULLY MAKE ECBUILD" \
+            | tee -a "${BUILDDIR}/ecbuild.log"
     else
 	    fatal "==> FAILED TO MAKE ECBUILD"
     fi 
@@ -120,7 +138,8 @@ _build_install_ecbuild () {
     make install 2>&1 | tee "${INSTALLDIR}/ecbuild.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE INSTALL ECBUILD"
+    	success "==> SUCCESFULLY MAKE INSTALL ECBUILD" \
+            | tee -a "${INSTALLDIR}/ecbuild.log"
     else
 	    fatal "==> FAILED TO MAKE INSTALL ECBUILD"
     fi 
@@ -140,20 +159,22 @@ _build_install_eckit () {
     ecbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${ECKIT_DIR}" -DENABLE_MPI=ON \
         -DENABLE_TESTS=OFF -DENABLE_ECKIT_CMD=OFF -DENABLE_ECKIT_SQL=OFF \
-        -DENABLE_OMP=OFF "${SOURCEDIR}/${ECKIT_DIR}"
+        -DENABLE_OMP=OFF "${SOURCEDIR}/${ECKIT_DIR}" \
+        | tee "${BUILDDIR}/eckit.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY BUILD ECKIT WITH ECBUILD"
+    	success "==> SUCCESFULLY BUILD ECKIT WITH ECBUILD" \
+            | tee -a "${BUILDDIR}/eckit.log"
     else
 	    fatal "==> FAILED TO BUILD ECKIT WITH ECBUILD"
     fi 
 
     # Make eckit.
     info "==>\t MAKE.."
-    make -j10 2>&1 | tee "${BUILDDIR}/eckit.log"
+    make -j10 2>&1 | tee -a "${BUILDDIR}/eckit.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE ECKIT"
+    	success "==> SUCCESFULLY MAKE ECKIT" | tee -a "${BUILDDIR}/eckit.log"
     else
 	    fatal "==> FAILED TO MAKE ECKIT"
     fi
@@ -163,7 +184,8 @@ _build_install_eckit () {
     make install 2>&1 | tee "${INSTALLDIR}/eckit.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE INSTALL ECKIT"
+    	success "==> SUCCESFULLY MAKE INSTALL ECKIT" \
+            | tee -a "${INSTALLDIR}/eckit.log"
     else
 	    fatal "==> FAILED TO MAKE INSTALL ECKIT"
     fi
@@ -182,20 +204,21 @@ _build_install_fckit () {
     info "==>\t ECBUILD.."
     ecbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FCKIT_DIR}" -DENABLE_TESTS=OFF \
-        "${SOURCEDIR}/${FCKIT_DIR}"
+        "${SOURCEDIR}/${FCKIT_DIR}" | tee "${BUILDDIR}/fckit.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY BUILD FCKIT WITH ECBUILD"
+    	success "==> SUCCESFULLY BUILD FCKIT WITH ECBUILD" \
+            | tee -a "${BUILDDIR}/fckit.log"
     else
 	    fatal "==> FAILED TO BUILD FCKIT WITH ECBUILD"
     fi 
 
     # Make fckit.
     info "==>\t MAKE.."
-    make 2>&1 | tee "${BUILDDIR}/fckit.log"
+    make 2>&1 | tee -a "${BUILDDIR}/fckit.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE FCKIT"
+    	success "==> SUCCESFULLY MAKE FCKIT" | tee -a "${BUILDDIR}/fckit.log"
     else
 	    fatal "==> FAILED TO MAKE FCKIT"
     fi
@@ -205,7 +228,8 @@ _build_install_fckit () {
     make install 2>&1 | tee "${INSTALLDIR}/fckit.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE INSTALL FCKIT"
+    	success "==> SUCCESFULLY MAKE INSTALL FCKIT" \
+            | tee -a "${INSTALLDIR}/fckit.log"
     else
 	    fatal "==> FAILED TO MAKE INSTALL FCKIT"
     fi
@@ -224,20 +248,22 @@ _build_install_fiat () {
     info "==>\t ECBUILD.."
     ecbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FIAT_DIR}" -DENABLE_MPI=ON \
-        -DENABLE_TESTS=OFF "${SOURCEDIR}/${FIAT_DIR}"
+        -DENABLE_TESTS=OFF -DCMAKE_EXE_LINKER_FLAGS="-fopenmp" \
+        "${SOURCEDIR}/${FIAT_DIR}" | tee "${BUILDDIR}/fiat.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY BUILD FIAT WITH ECBUILD"
+    	success "==> SUCCESFULLY BUILD FIAT WITH ECBUILD" \
+            | tee -a "${BUILDDIR}/fiat.log"
     else
 	    fatal "==> FAILED TO BUILD FIAT WITH ECBUILD"
     fi 
 
     # Make FIAT.
     info "==>\t MAKE.."
-    make 2>&1 | tee "${BUILDDIR}/fiat.log"
+    make 2>&1 | tee -a "${BUILDDIR}/fiat.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE FIAT"
+    	success "==> SUCCESFULLY MAKE FIAT" | tee -a "${BUILDDIR}/fiat.log"
     else
 	    fatal "==> FAILED TO MAKE FIAT"
     fi
@@ -247,7 +273,8 @@ _build_install_fiat () {
     make install 2>&1 | tee "${INSTALLDIR}/fiat.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE INSTALL FIAT"
+    	success "==> SUCCESFULLY MAKE INSTALL FIAT" \
+            | tee -a "${INSTALLDIR}/fiat.log"
     else
 	    fatal "==> FAILED TO MAKE INSTALL FIAT"
     fi 
@@ -270,20 +297,22 @@ _build_install_ectrans () {
         -DENABLE_ACCGPU=ON -DENABLE_TESTS=OFF -DENABLE_GPU_AWARE_MPI=ON \
         -DENABLE_CPU=ON -DENABLE_ETRANS=ON -DENABLE_DOUBLE_PRECISION=ON \
         -DENABLE_SINGLE_PRECISION=OFF \
-        "${SOURCEDIR}/${ECTRANS_DIR}"
+        "${SOURCEDIR}/${ECTRANS_DIR}" | tee "${BUILDDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY BUILD ECTRANS WITH ECBUILD"
+    	success "==> SUCCESFULLY BUILD ECTRANS WITH ECBUILD" \
+            | tee -a "${BUILDDIR}/ectrans.log"
     else
 	    fatal "==> FAILED TO BUILD ECTRANS WITH ECBUILD"
     fi 
 
     # Make ecTrans.
     info "==>\t MAKE (supposed to fail).."
-    make -j32 2>&1 | tee "${BUILDDIR}/ectrans.log"
+    make -j32 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY FIRST MAKE ECTRANS"
+    	success "==> SUCCESFULLY FIRST MAKE ECTRANS" \
+            | tee -a "${BUILDDIR}/ectrans.log"
     else
 	    fatal "==> FAILED TO MAKE ECTRANS"
     fi
@@ -293,7 +322,8 @@ _build_install_ectrans () {
     make install 2>&1 | tee "${INSTALLDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE INSTALL ECTRANS"
+    	success "==> SUCCESFULLY MAKE INSTALL ECTRANS" \
+            | tee -a "${INSTALLDIR}/ectrans.log"
     else
 	    fatal "==> FAILED TO MAKE INSTALL ECTRANS"
     fi 
@@ -318,9 +348,8 @@ detect_and_load_machine() {
     case $machine in
         "lumi")
             # Load modules.
-            module purge
-            module load LUMI/23.03 partition/G PrgEnv-cray cpe/23.09 craype-x86-trento \
-                craype-accel-amd-gfx90a
+            module load LUMI/23.03 partition/G PrgEnv-cray \
+                cpe/23.09 craype-x86-trento craype-accel-amd-gfx90a
             module load cray-mpich cray-libsci cray-fftw cray-python
             module load cray-hdf5-parallel cray-netcdf-hdf5parallel
             module load buildtools
@@ -379,7 +408,7 @@ detect_and_load_machine() {
     fi
 
     # Output loaded modules to log.
-    module list 2>&1 | tee "install.log"
+    module list 2>&1 | tee "modules.log"
 }
 
 main () {
