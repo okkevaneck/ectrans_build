@@ -30,7 +30,7 @@ download () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED ECBUILD"
     else
-	    fatal "==> FAILED TO CLONE ECBUILD\n\tMake sure you're on login4."
+	    fatal "==> FAILED TO CLONE ECBUILD."
     fi 
 
     # Pull eckit.
@@ -40,19 +40,24 @@ download () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED ECKIT"
     else
-	    fatal "==> FAILED TO CLONE ECKIT\n\tMake sure you're on login4."
+	    fatal "==> FAILED TO CLONE ECKIT"
     fi 
 
-    # Pull fckit.
-    git clone --branch "0.9.0" --single-branch \
-        https://github.com/ecmwf/fckit.git "${FCKIT_DIR}"
+    # Pull the 4d812b9 commit fckit.
+    mkdir -p ${FCKIT_DIR}
+    cd ${FCKIT_DIR} || exit 1
+    git init
+    git remote add origin https://github.com/ecmwf/fckit.git
+    git fetch --depth 1 origin 4d812b9cb5721dae5d03ed8c906059d52f5e5411
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED FCKIT"
     else
-	    fatal "==> FAILED TO CLONE FCKIT\n\tMake sure you're on login4."
+	    fatal "==> FAILED TO CLONE FCKIT."
     fi 
-    
+    git checkout FETCH_HEAD 
+    cd ..
+
     # Pull FIAT.
     git clone --branch "1.4.1" --single-branch \
         https://github.com/ecmwf-ifs/fiat.git "${FIAT_DIR}"
@@ -60,21 +65,21 @@ download () {
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED FIAT"
     else
-	    fatal "==> FAILED TO CLONE FIAT\n\tMake sure you're on login4."
-    fi 
+	    fatal "==> FAILED TO CLONE FIAT"
+    fi
 
-    # Pull ecTrans.
+    # Pull the c8c5c61 commit of ecTrans.
     info "==> PULLING ECTRANS"
     mkdir -p ${ECTRANS_DIR}
     cd ${ECTRANS_DIR} || exit 1
     git init
-    git remote add origin https://github.com/ecmwf-ifs/ectrans
+    git remote add origin https://github.com/ecmwf-ifs/ectrans.git
     git fetch --depth 1 origin c8c5c6100bb62b1d9ce15012a0722c0611992ae9
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY CLONED ECTRANS"
     else
-	    fatal "==> FAILED TO CLONE ECTRANS\n\tMake sure you're on login4."
+	    fatal "==> FAILED TO CLONE ECTRANS."
     fi 
     git checkout FETCH_HEAD 
     cd ..
@@ -177,7 +182,7 @@ _build_install_fckit () {
     info "==>\t ECBUILD.."
     ecbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FCKIT_DIR}" -DENABLE_TESTS=OFF \
-        -DENABLE_ECKIT=OFF "${SOURCEDIR}/${FCKIT_DIR}"
+        "${SOURCEDIR}/${FCKIT_DIR}"
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD FCKIT WITH ECBUILD"
@@ -260,7 +265,7 @@ _build_install_ectrans () {
     info "==>\t ECBUILD.."
     ecbuild --prefix="${INSTALLDIR}/${ECTRANS_DIR}" \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -Dfiat_ROOT="${INSTALLDIR}/${FIAT_DIR}" \
+        -Dfiat_ROOT="${INSTALLDIR}/${FIAT_DIR}" -DENABLE_OMP=ON \
         -DENABLE_FFTW=ON -DENABLE_GPU=ON -DENABLE_OMPGPU=OFF \
         -DENABLE_ACCGPU=ON -DENABLE_TESTS=OFF -DENABLE_GPU_AWARE_MPI=ON \
         -DENABLE_CPU=ON -DENABLE_ETRANS=ON -DENABLE_DOUBLE_PRECISION=ON \
@@ -278,19 +283,10 @@ _build_install_ectrans () {
     make -j32 2>&1 | tee "${BUILDDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY FIRST MAKE ECTRANS\n\tExpected to fail.."
+    	success "==> SUCCESFULLY FIRST MAKE ECTRANS"
     else
-	    info "==> FAILED TO FIRST MAKE ECTRANS\n\tAs expected!"
-    fi 
-
-    info "==>\t MAKE (again, should succeed).."
-    make -j32 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY SECOND MAKE ECTRANS"
-    else
-	    fatal "==> FAILED TO SECOND MAKE ECTRANS"
-    fi 
+	    fatal "==> FAILED TO MAKE ECTRANS"
+    fi
 
     # Install ecTrans.
     info "==>\t MAKE INSTALL.."
