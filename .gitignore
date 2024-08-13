@@ -4,11 +4,14 @@
 **/*.row
 **/TRACE*
 
+# Ignore loaded modules output.
+./modules.log
+
 # Ignore the directories used during installation.
 src/
 
 # Ignore results folder and other results.
-results
+results/
 profiling/**/res-*/**/*.db
 profiling/**/res-*/**/*.json
 profiling/**/res-*/**/*.sysinfo.txt
