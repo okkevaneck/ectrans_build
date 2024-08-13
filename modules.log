@@ -1,10 +1,16 @@
 
 Currently Loaded Modules:
-  1) ModuleLabel/label  (S)   6) craype-network-ofi                         11) cray-dsmml/0.2.2            16) craype-accel-amd-gfx90a      21) cray-hdf5-parallel/1.12.2.7      (H)
-  2) lumi-tools/24.05   (S)   7) xpmem/2.5.2-2.4_3.50__gd0f7936.shasta      12) craype/2.7.23          (H)  17) cray-mpich/8.1.27       (H)  22) cray-netcdf-hdf5parallel/4.9.0.7 (H)
-  3) init-lumi/0.2      (S)   8) partition/G                           (S)  13) perftools-base/23.09.0 (H)  18) cray-libsci/23.09.1.1   (H)  23) buildtools/23.03
-  4) LUMI/23.03         (S)   9) PrgEnv-cray/8.4.0                     (H)  14) cpe/23.09              (H)  19) cray-fftw/3.3.10.5      (H)  24) rocm/5.2.3
-  5) libfabric/1.15.2.0      10) cce/16.0.1                            (H)  15) craype-x86-trento           20) cray-python/3.10.10     (H)
+  1) ModuleLabel/label                     (S)  12) craype/2.7.23           (H)
+  2) lumi-tools/24.05                      (S)  13) perftools-base/23.09.0  (H)
+  3) init-lumi/0.2                         (S)  14) cpe/23.09               (H)
+  4) LUMI/23.03                            (S)  15) craype-x86-trento
+  5) libfabric/1.15.2.0                         16) craype-accel-amd-gfx90a
+  6) craype-network-ofi                         17) cray-mpich/8.1.27       (H)
+  7) xpmem/2.5.2-2.4_3.50__gd0f7936.shasta      18) cray-libsci/23.09.1.1   (H)
+  8) partition/G                           (S)  19) cray-fftw/3.3.10.5      (H)
+  9) PrgEnv-cray/8.4.0                     (H)  20) cray-python/3.10.10     (H)
+ 10) cce/16.0.1                            (H)  21) buildtools/23.03
+ 11) cray-dsmml/0.2.2                           22) rocm/5.2.3
 
   Where:
    H:  Hidden Module

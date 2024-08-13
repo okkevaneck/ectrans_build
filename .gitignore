@@ -5,7 +5,7 @@
 **/TRACE*
 
 # Ignore loaded modules output.
-./modules.log
+modules.log
 
 # Ignore the directories used during installation.
 src/

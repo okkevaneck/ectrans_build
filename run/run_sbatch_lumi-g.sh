@@ -10,7 +10,7 @@
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8
 #SBATCH --ntasks=8
-#SBATCH --time=0:10:00
+#SBATCH --time=00:01:30
 
 # Load helpers for color printing.
 source ../helpers/helpers.sh
@@ -57,7 +57,7 @@ mkdir -p "$RESULTS"
 
 # Run ecTrans with given arguments.
 ARGS="--nproma $NPROMA --vordiv --scders --uvders --nfld $NFLD \
-        --norms --niter $NITER"
+        --norms --niter $NITER --dump-values"
 srun --cpu-bind=${CPU_BIND} --output="$RESULTS/out.%j.%t" \
         --error="$RESULTS/err.%j.%t" --input=none "$SELECT_GPU_NAME" -- \
         "${INSTALLDIR}/${ECTRANS_DIR}/bin/${BINARY}" "${ARGS}"
