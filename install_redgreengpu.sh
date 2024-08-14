@@ -80,8 +80,8 @@ _build_install_ecbuild () {
     cd "${BUILDDIR}/${ECBUILD_DIR}" || exit 1
     info "==>\t ECBUILD.."
     "${SOURCEDIR}/${ECBUILD_DIR}/bin/ecbuild" \
-        --prefix="${INSTALLDIR}/${ECBUILD_DIR}" "${SOURCEDIR}/${ECBUILD_DIR}" \
-        | tee "${BUILDDIR}/ecbuild.log"
+        --prefix="${INSTALLDIR}/${ECBUILD_DIR}" \
+        "${SOURCEDIR}/${ECBUILD_DIR}" | tee "${BUILDDIR}/ecbuild.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY BUILD ECBUILD WITH ECBUILD" \
@@ -124,8 +124,9 @@ _build_install_fiat () {
     mkdir -p "${BUILDDIR}/${FIAT_DIR}"
     cd "${BUILDDIR}/${FIAT_DIR}" || exit 1
     info "==>\t ECBUILD.."
-    ecbuild -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FIAT_DIR}" -DENABLE_MPI=ON \
+    ecbuild -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FIAT_DIR}" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DENABLE_MPI=ON \
         -DENABLE_TESTS=OFF \
         "${SOURCEDIR}/${FIAT_DIR}" | tee "${BUILDDIR}/fiat.log"
     retval=$?
@@ -168,13 +169,21 @@ _build_install_ectrans () {
     mkdir -p "${BUILDDIR}/${ECTRANS_DIR}"
     cd "${BUILDDIR}/${ECTRANS_DIR}" || exit 1
     info "==>\t ECBUILD.."
+    BUILD_GPU="OFF"
     ecbuild --prefix="${INSTALLDIR}/${ECTRANS_DIR}" \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -Dfiat_ROOT="${INSTALLDIR}/${FIAT_DIR}" -DENABLE_OMP=ON \
-        -DENABLE_FFTW=ON -DENABLE_GPU=ON -DENABLE_OMPGPU=OFF \
-        -DENABLE_ACCGPU=ON -DENABLE_TESTS=OFF -DENABLE_GPU_AWARE_MPI=ON \
-        -DENABLE_CPU=ON -DENABLE_ETRANS=ON -DENABLE_DOUBLE_PRECISION=ON \
+        -DENABLE_TESTS=OFF \
         -DENABLE_SINGLE_PRECISION=OFF \
+        -DENABLE_DOUBLE_PRECISION=ON \
+        -DENABLE_TRANSI=ON \
+        -DENABLE_MKL=OFF \
+        -DENABLE_FFTW=ON \
+        -DENABLE_GPU=$BUILD_GPU \
+        -DENABLE_GPU_AWARE_MPI=$BUILD_GPU \
+        -DENABLE_GPU_GRAPHS_GEMM=$BUILD_GPU \
+        -DENABLE_CUTLASS=OFF \
+        -DENABLE_3XTF32=OFF \
+        -Dfiat_ROOT="${INSTALLDIR}/${FIAT_DIR}" \
         "${SOURCEDIR}/${ECTRANS_DIR}" | tee "${BUILDDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
@@ -247,8 +256,7 @@ detect_and_load_machine() {
             module load \
                 cmake/3.29.2 EB/apps \
                 nvidia-hpc-sdk/24.3 \
-                intel/2023.2.0 \
-                impi/2021.10.0 fftw/3.3.10 
+                intel/2023.2.0 impi/2021.10.0 fftw/3.3.10
 
             # Set compilers for make/cmake.
             export FC90=nvfortran
@@ -257,8 +265,8 @@ detect_and_load_machine() {
             export CXX=nvc++
 
             # Set toolchain.
-            export TOOLCHAIN_FILE=${BASEDIR}/../toolchains/toolchain_mn5.cmake
-            export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
+            # export TOOLCHAIN_FILE=${BASEDIR}/../toolchains/toolchain_mn5.cmake
+            # export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
             ;;
         *)
             fatal "Passed argument '$machine' not in [lumi|leonardo|mn5]."
@@ -284,22 +292,15 @@ main () {
     # Export paths for linking the libraries.
     export BIN_PATH="${INSTALLDIR}/${ECBUILD_DIR}/bin"
     export INCLUDE_PATH="${INSTALLDIR}/${ECBUILD_DIR}/include"
-    export INSTALL_PATH="${INSTALLDIR}/${ECBUILD_DIR}/"
     export ECBUILD_PATH="${INSTALLDIR}/${ECBUILD_DIR}/"
-    export ECKIT_PATH="${INSTALLDIR}/${ECKIT_DIR}/"
-    export FCKIT_PATH="${INSTALLDIR}/${FCKIT_DIR}/"
     export FCKIT_PATH="${INSTALLDIR}/${FIAT_DIR}/"
 
     # Extend LIB_PATH with each component.
     export LIB_PATH="${LIB_PATH}:${INSTALLDIR}/${ECBUILD_DIR}/lib:${INSTALLDIR}/${ECBUILD_DIR}/lib64"
-    export LIB_PATH="${LIB_PATH}:${INSTALLDIR}/${ECKIT_DIR}/lib:${INSTALLDIR}/${ECKIT_DIR}/lib64"
-    export LIB_PATH="${LIB_PATH}:${INSTALLDIR}/${FCKIT_DIR}/lib:${INSTALLDIR}/${FCKIT_DIR}/lib64"
     export LIB_PATH="${LIB_PATH}:${INSTALLDIR}/${FIAT_DIR}/lib:${INSTALLDIR}/${FIAT_DIR}/lib64"
 
     # Extend PATH with bin paths.
     export PATH="${PATH}:${INSTALLDIR}/${ECBUILD_DIR}/bin/"
-    export PATH="${PATH}:${INSTALLDIR}/${ECKIT_DIR}/bin/"
-    export PATH="${PATH}:${INSTALLDIR}/${FCKIT_DIR}/bin/"
     export PATH="${PATH}:${INSTALLDIR}/${FIAT_DIR}/bin/"
 
     # Create directories for the installation process.
