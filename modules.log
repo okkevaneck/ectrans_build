@@ -1,17 +1,6 @@
 
 Currently Loaded Modules:
-  1) ModuleLabel/label                     (S)  12) craype/2.7.23           (H)
-  2) lumi-tools/24.05                      (S)  13) perftools-base/23.09.0  (H)
-  3) init-lumi/0.2                         (S)  14) cpe/23.09               (H)
-  4) LUMI/23.03                            (S)  15) craype-x86-trento
-  5) libfabric/1.15.2.0                         16) craype-accel-amd-gfx90a
-  6) craype-network-ofi                         17) cray-mpich/8.1.27       (H)
-  7) xpmem/2.5.2-2.4_3.50__gd0f7936.shasta      18) cray-libsci/23.09.1.1   (H)
-  8) partition/G                           (S)  19) cray-fftw/3.3.10.5      (H)
-  9) PrgEnv-cray/8.4.0                     (H)  20) cray-python/3.10.10     (H)
- 10) cce/16.0.1                            (H)  21) buildtools/23.03
- 11) cray-dsmml/0.2.2                           22) rocm/5.2.3
+  1) bsc/1.0   2) cmake/3.29.2   3) EB/apps   4) nvidia-hpc-sdk/24.3   5) intel/2023.2.0   6) impi/2021.10.0   7) fftw/3.3.10
 
-  Where:
-   H:  Hidden Module
-   S:  Module is Sticky, requires --force to unload or purge
+ 
+

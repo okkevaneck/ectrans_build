@@ -12,37 +12,35 @@
 
 set( ECBUILD_FIND_MPI OFF CACHE STRING "" )
 set( ENABLE_USE_STMT_FUNC ON CACHE STRING "" )
+set(CMAKE_CUDA_COMPILER /apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/compilers/bin/nvcc)
 
 ####################################################################
 # OpenMP FLAGS
 ####################################################################
 
 set( ENABLE_OMP ON CACHE STRING "" )
-set( OpenMP_C_FLAGS "-fopenmp" CACHE STRING "" )
-set( OpenMP_Fortran_FLAGS "-fopenmp" CACHE STRING "" )
-set( CMAKE_EXE_LINKER_FLAGS "-fopenmp" CACHE STRING "" )
+# set( OpenMP_C_FLAGS "-mp -target=gpu" CACHE STRING "" )
+# set( OpenMP_Fortran_FLAGS "-mp -target=gpu" CACHE STRING "" )
+# set( CMAKE_EXE_LINKER_FLAGS "-mp -target=gpu" CACHE STRING "" )
+# -target=gpu
 
 ####################################################################
 # OpenACC FLAGS
 ####################################################################
 
 set( ENABLE_ACC ON CACHE STRING "" )
-set( OpenACC_C_FLAGS "-hacc" )
-set( OpenACC_CXX_FLAGS "-hacc" )
-set( OpenACC_Fortran_FLAGS "-hacc -h acc_model=deep_copy:no_fast_addr:auto_async_none" )
+set( OpenACC_C_FLAGS "-acc=gpu" )
+set( OpenACC_CXX_FLAGS "-acc=gpu" )
+set( OpenACC_Fortran_FLAGS "-acc=gpu" )
 
 ####################################################################
 # Compiler FLAGS
 ####################################################################
 
 # General Flags (add to default)
-set(ECBUILD_Fortran_FLAGS "-hcontiguous")
-set(ECBUILD_Fortran_FLAGS "${ECBUILD_Fortran_FLAGS} -hbyteswapio")
-set(ECBUILD_Fortran_FLAGS "${ECBUILD_Fortran_FLAGS} -Wl,--as-needed")
-set(ECBUILD_Fortran_FLAGS "${ECBUILD_Fortran_FLAGS} -Wl,-hsystem_alloc")
+set(ECBUILD_Fortran_FLAGS "-Wl,--as-needed")
 if(ENABLE_OMP)
-    set(ECBUILD_Fortran_FLAGS "${ECBUILD_Fortran_FLAGS} -fopenmp")
+    set(ECBUILD_Fortran_FLAGS "${ECBUILD_Fortran_FLAGS} -mp=gpu")
+# if(ENABLE_ACC)
+#     set(ECBUILD_Fortran_FLAGS "${ECBUILD_Fortran_FLAGS} -")
 endif()
-
-# No tcmalloc:
-set(ECBUILD_Fortran_LINK_FLAGS "${ECBUILD_Fortran_LINK_FLAGS} -hsystem_alloc")

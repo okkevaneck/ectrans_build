@@ -36,38 +36,6 @@ download () {
 	    fatal "==> FAILED TO CLONE ECBUILD."
     fi 
 
-    # Pull eckit.
-    info "==> PULLING ECKIT" | tee "${SOURCEDIR}/eckit.log"
-    git clone --branch "1.26.4" --single-branch \
-        https://github.com/ecmwf/eckit.git "${ECKIT_DIR}" \
-        | tee -a "${SOURCEDIR}/eckit.log"
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED ECKIT" \
-            | tee -a "${SOURCEDIR}/eckit.log"
-    else
-	    fatal "==> FAILED TO CLONE ECKIT"
-    fi 
-
-    # Pull the 4d812b9 commit fckit.
-    info "==> PULLING FCKIT" | tee "${SOURCEDIR}/fckit.log"
-    mkdir -p ${FCKIT_DIR}
-    cd ${FCKIT_DIR} || exit 1
-    git init | tee -a "${SOURCEDIR}/fckit.log"
-    git remote add origin https://github.com/ecmwf/fckit.git \
-        | tee -a "${SOURCEDIR}/fckit.log"
-    git fetch --depth 1 origin 4d812b9cb5721dae5d03ed8c906059d52f5e5411 \
-        | tee -a "${SOURCEDIR}/fckit.log"
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED FCKIT" \
-            | tee -a "${SOURCEDIR}/fckit.log"
-    else
-	    fatal "==> FAILED TO CLONE FCKIT."
-    fi 
-    git checkout FETCH_HEAD | tee -a "${SOURCEDIR}/fckit.log"
-    cd ..
-
     # Pull FIAT.
     info "==> PULLING FIAT" | tee "${SOURCEDIR}/fiat.log"
     git clone --branch "1.4.1" --single-branch \
@@ -145,96 +113,6 @@ _build_install_ecbuild () {
     fi 
 }
 
-# Build and install eckit.
-_build_install_eckit () {
-    # Build and Install ECKIT.
-    info "==> INSTALLING ECKIT.."
-    cd "${SOURCEDIR}/${ECKIT_DIR}" || exit 1
-    
-    # Create build directory and build eckit.
-    rm -rf "${BUILDDIR:?}/${ECKIT_DIR:?}" "${INSTALLDIR:?}/${ECKIT_DIR:?}"
-    mkdir -p "${BUILDDIR}/${ECKIT_DIR}"
-    cd "${BUILDDIR}/${ECKIT_DIR}" || exit 1
-    info "==>\t ECBUILD.."
-    ecbuild -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${ECKIT_DIR}" -DENABLE_MPI=ON \
-        -DENABLE_TESTS=OFF -DENABLE_ECKIT_CMD=OFF -DENABLE_ECKIT_SQL=OFF \
-        -DENABLE_OMP=OFF "${SOURCEDIR}/${ECKIT_DIR}" \
-        | tee "${BUILDDIR}/eckit.log"
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY BUILD ECKIT WITH ECBUILD" \
-            | tee -a "${BUILDDIR}/eckit.log"
-    else
-	    fatal "==> FAILED TO BUILD ECKIT WITH ECBUILD"
-    fi 
-
-    # Make eckit.
-    info "==>\t MAKE.."
-    make -j10 2>&1 | tee -a "${BUILDDIR}/eckit.log"
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE ECKIT" | tee -a "${BUILDDIR}/eckit.log"
-    else
-	    fatal "==> FAILED TO MAKE ECKIT"
-    fi
-
-    # Install eckit.
-    info "==>\t MAKE INSTALL.."
-    make install 2>&1 | tee "${INSTALLDIR}/eckit.log"
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE INSTALL ECKIT" \
-            | tee -a "${INSTALLDIR}/eckit.log"
-    else
-	    fatal "==> FAILED TO MAKE INSTALL ECKIT"
-    fi
-}
-
-# Build and install fckit.
-_build_install_fckit () {
-    # Build and Install FCKIT.
-    info "==> INSTALLING FCKIT.."
-    cd "${SOURCEDIR}/${FCKIT_DIR}" || exit 1
-    
-    # Create build directory and build fckit.
-    rm -rf "${BUILDDIR:?}/${FCKIT_DIR:?}" "${INSTALLDIR:?}/${FCKIT_DIR:?}"
-    mkdir -p "${BUILDDIR}/${FCKIT_DIR}"
-    cd "${BUILDDIR}/${FCKIT_DIR}" || exit 1
-    info "==>\t ECBUILD.."
-    ecbuild -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FCKIT_DIR}" -DENABLE_TESTS=OFF \
-        "${SOURCEDIR}/${FCKIT_DIR}" | tee "${BUILDDIR}/fckit.log"
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY BUILD FCKIT WITH ECBUILD" \
-            | tee -a "${BUILDDIR}/fckit.log"
-    else
-	    fatal "==> FAILED TO BUILD FCKIT WITH ECBUILD"
-    fi 
-
-    # Make fckit.
-    info "==>\t MAKE.."
-    make 2>&1 | tee -a "${BUILDDIR}/fckit.log"
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE FCKIT" | tee -a "${BUILDDIR}/fckit.log"
-    else
-	    fatal "==> FAILED TO MAKE FCKIT"
-    fi
-
-    # Install fckit.
-    info "==>\t MAKE INSTALL.."
-    make install 2>&1 | tee "${INSTALLDIR}/fckit.log"
-    retval=$?
-    if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE INSTALL FCKIT" \
-            | tee -a "${INSTALLDIR}/fckit.log"
-    else
-	    fatal "==> FAILED TO MAKE INSTALL FCKIT"
-    fi
-}
-
 # Build and install FIAT.
 _build_install_fiat () {
     # Build and Install FIAT.
@@ -248,7 +126,7 @@ _build_install_fiat () {
     info "==>\t ECBUILD.."
     ecbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FIAT_DIR}" -DENABLE_MPI=ON \
-        -DENABLE_TESTS=OFF -DCMAKE_EXE_LINKER_FLAGS="-fopenmp" \
+        -DENABLE_TESTS=OFF \
         "${SOURCEDIR}/${FIAT_DIR}" | tee "${BUILDDIR}/fiat.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
@@ -307,7 +185,7 @@ _build_install_ectrans () {
     fi 
 
     # Make ecTrans.
-    info "==>\t MAKE (supposed to fail).."
+    info "==>\t MAKE.."
     make -j32 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
@@ -332,8 +210,6 @@ _build_install_ectrans () {
 # Build and install source files.
 build_install_all () {
     _build_install_ecbuild
-    _build_install_eckit
-    _build_install_fckit
     _build_install_fiat
     _build_install_ectrans
 }
@@ -372,28 +248,17 @@ detect_and_load_machine() {
                 cmake/3.29.2 EB/apps \
                 nvidia-hpc-sdk/24.3 \
                 intel/2023.2.0 \
-                impi/2021.10.0 fftw/3.3.10
-
-            #module load \
-            #    cmake/3.29.2 EB/apps \
-            #    CUDA/12.5.0 \
-            #    intel/2023.2.0 impi/2021.10.0 \
-            #    hdf5/1.14.1-2 fftw/3.3.10 \
-            #    OpenBLAS/0.3.24-GCC-13.2.0
-
-            #module load \
-            #    cmake/3.29.2 EB/apps \
-            #    CUDA/12.5.0 \
-            #    intel/2023.2.0 openmpi/4.1.5-gcc hdf5/1.14.1-2-gcc-ompi \
-            #    fftw/3.3.10-gcc-ompi OpenBLAS/0.3.24-GCC-13.2.0
-           
-            #mpi/2021.11 openmpi/4.1.5-gcc
+                impi/2021.10.0 fftw/3.3.10 
 
             # Set compilers for make/cmake.
-            export FC90=ifort
-            export FC=ifort
-            export CC=nvcc
-            export CXX=nvcc
+            export FC90=nvfortran
+            export FC=nvfortran
+            export CC=nvc
+            export CXX=nvc++
+
+            # Set toolchain.
+            export TOOLCHAIN_FILE=${BASEDIR}/../toolchains/toolchain_mn5.cmake
+            export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
             ;;
         *)
             fatal "Passed argument '$machine' not in [lumi|leonardo|mn5]."
@@ -465,14 +330,6 @@ main () {
                         "ecbuild")
                             info "==> install.sh:  Building ecBuild"
                             _build_install_ecbuild
-                            ;;
-                        "eckit")
-                            info "==> install.sh:  Building eckit"
-                            _build_install_eckit
-                            ;;
-                        "fckit")
-                            info "==> install.sh:  Building fckit"
-                            _build_install_fckit
                             ;;
                         "fiat")
                             info "==> install.sh:  Building FIAT"
