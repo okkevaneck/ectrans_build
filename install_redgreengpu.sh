@@ -170,7 +170,7 @@ _build_install_ectrans () {
     cd "${BUILDDIR}/${ECTRANS_DIR}" || exit 1
     info "==>\t ECBUILD.."
     BUILD_GPU="ON"
-    ecbuild --prefix="${INSTALLDIR}/${ECTRANS_DIR}" \
+    ecbuild -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${ECTRANS_DIR}" \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DENABLE_TESTS=OFF \
         -DENABLE_SINGLE_PRECISION=OFF \
@@ -195,7 +195,7 @@ _build_install_ectrans () {
 
     # Make ecTrans.
     info "==>\t MAKE.."
-    make -j32 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
+    VERBOSE=1 make -j32 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
     	success "==> SUCCESFULLY FIRST MAKE ECTRANS" \
@@ -265,8 +265,8 @@ detect_and_load_machine() {
             export CXX=nvc++
 
             # Set toolchain.
-            # export TOOLCHAIN_FILE=${BASEDIR}/../toolchains/toolchain_mn5.cmake
-            # export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
+            export TOOLCHAIN_FILE=${BASEDIR}/../toolchains/toolchain_mn5.cmake
+            export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
             ;;
         *)
             fatal "Passed argument '$machine' not in [lumi|leonardo|mn5]."
