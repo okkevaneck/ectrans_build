@@ -169,7 +169,7 @@ _build_install_ectrans () {
     mkdir -p "${BUILDDIR}/${ECTRANS_DIR}"
     cd "${BUILDDIR}/${ECTRANS_DIR}" || exit 1
     info "==>\t ECBUILD.."
-    BUILD_GPU="OFF"
+    BUILD_GPU="ON"
     ecbuild --prefix="${INSTALLDIR}/${ECTRANS_DIR}" \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DENABLE_TESTS=OFF \
