@@ -9,6 +9,12 @@
 #SBATCH --nodes=1
 #SBATCH --time=00:1:30
 
+# Load modules.
+module load \
+    cmake/3.29.2 EB/apps \
+    nvidia-hpc-sdk/24.3 \
+    fftw/3.3.10-gcc-nvhpcx
+
 # Load helpers for color printing.
 source ../helpers/helpers.sh
 
@@ -34,12 +40,14 @@ rm -rf "$RESULTS"
 mkdir -p "$RESULTS"
 
 # Run ecTrans with given arguments.
-ARGS="--nproma $NPROMA --vordiv --scders --uvders --nfld $NFLD --norms --niter $NITER"
 srun --output="$RESULTS/out.%j.%t" --error="$RESULTS/err.%j.%t" --input=none \
-    -- "${INSTALLDIR}/${ECTRANS_DIR}/bin/${BINARY}" "${ARGS}"
-
-# Delete the "select_gpu_sbatch" script.
-rm -rf "$SELECT_GPU_NAME"
+    -- ${INSTALLDIR}/${ECTRANS_DIR}/bin/${BINARY} \
+        --vordiv \
+        --scders \
+        --uvders \
+        --nfld $NFLD \
+        --norms \
+        --niter $NITER
 
 # Output succesfull run.
 success "Finished the sbatch run of ecTrans."

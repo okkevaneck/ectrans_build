@@ -1,7 +1,10 @@
 
 Currently Loaded Modules:
-  1) bsc/1.0        3) EB/apps               5) intel/2023.2.0   7) fftw/3.3.10
-  2) cmake/3.29.2   4) nvidia-hpc-sdk/24.3   6) impi/2021.10.0
+  1) bsc/1.0                      6) binutils/2.40-GCCcore-13.2.0  11) OpenBLAS/0.3.24-GCC-13.2.0
+  2) cmake/3.29.2                 7) GCC/13.2.0                    12) LAPACK/3.12.0-GCC-13.2.0
+  3) EB/apps                      8) FFTW/3.3.10-GCC-13.2.0        13) intel/2023.2.0
+  4) GCCcore/13.2.0               9) CUDA/12.4.0                   14) impi/2021.10.0
+  5) zlib/1.2.13-GCCcore-13.2.0  10) gcc/13.2.0-nvidia-hpc-sdk     15) fftw/3.3.10
 
  
 

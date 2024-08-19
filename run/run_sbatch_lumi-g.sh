@@ -54,7 +54,7 @@ rm -rf "$RESULTS"
 mkdir -p "$RESULTS"
 
 # Run ecTrans with given arguments.
-ARGS="--nproma $NPROMA --vordiv --scders --uvders --nfld $NFLD \
+ARGS="--vordiv --scders --uvders --nfld $NFLD \
         --norms --niter $NITER"
 srun --cpu-bind=${CPU_BIND} --output="$RESULTS/out.%j.%t" \
         --error="$RESULTS/err.%j.%t" --input=none "$SELECT_GPU_NAME" -- \

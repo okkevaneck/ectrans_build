@@ -42,7 +42,7 @@
 # set(ECBUILD_C_FLAGS "${ECBUILD_C_FLAGS} -fast")
 # set(ECBUILD_CXX_FLAGS "${ECBUILD_CXX_FLAGS} --diag_suppress177 -fast")
 # set(ECBUILD_Fortran_FLAGS "-Wl --disable-new-dtags -Mlarge_arrays -fast")
-set(ECBUILD_Fortran_FLAGS "-lm -Wall -Wextra")
+# set(ECBUILD_Fortran_FLAGS "-lm -Wall -Wextra")
 # if(ENABLE_OMP)
 #     set(ECBUILD_Fortran_FLAGS "${ECBUILD_Fortran_FLAGS} -mp=gpu")
 # endif()

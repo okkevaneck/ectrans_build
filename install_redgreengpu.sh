@@ -24,42 +24,43 @@ download () {
     cd "${SOURCEDIR}" || exit 1
 
     # Pull ecBuild.
-    info "==> PULLING ECBUILD" | tee "${SOURCEDIR}/ecbuild.log"
+    info "==> PULLING ECBUILD" 2>&1 | tee "${SOURCEDIR}/ecbuild.log"
     git clone --branch "3.8.5" --single-branch \
-        https://github.com/ecmwf/ecbuild.git "${ECBUILD_DIR}" \
+        https://github.com/ecmwf/ecbuild.git "${ECBUILD_DIR}" 2>&1 \
         | tee -a "${SOURCEDIR}/ecbuild.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED ECBUILD" \
+    	success "==> SUCCESFULLY CLONED ECBUILD" 2>&1 \
             | tee -a "${SOURCEDIR}/ecbuild.log"
     else
 	    fatal "==> FAILED TO CLONE ECBUILD."
     fi 
 
     # Pull FIAT.
-    info "==> PULLING FIAT" | tee "${SOURCEDIR}/fiat.log"
+    info "==> PULLING FIAT" 2>&1 | tee "${SOURCEDIR}/fiat.log"
     git clone --branch "1.4.1" --single-branch \
-        https://github.com/ecmwf-ifs/fiat.git "${FIAT_DIR}" \
+        https://github.com/ecmwf-ifs/fiat.git "${FIAT_DIR}" 2>&1 \
         | tee -a "${SOURCEDIR}/fiat.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED FIAT" | tee -a "${SOURCEDIR}/fiat.log"
+    	success "==> SUCCESFULLY CLONED FIAT" 2>&1 \
+            | tee -a "${SOURCEDIR}/fiat.log"
     else
 	    fatal "==> FAILED TO CLONE FIAT"
     fi
 
     # Pull the c8c5c61 commit of ecTrans.
-    info "==> PULLING ECTRANS" | tee "${SOURCEDIR}/ectrans.log"
+    info "==> PULLING ECTRANS" 2>&1 | tee "${SOURCEDIR}/ectrans.log"
     mkdir -p ${ECTRANS_DIR}
     cd ${ECTRANS_DIR} || exit 1
     git init | tee -a "${SOURCEDIR}/ectrans.log"
-    git remote add origin https://github.com/ecmwf-ifs/ectrans.git \
+    git remote add origin https://github.com/ecmwf-ifs/ectrans.git 2>&1 \
         | tee -a "${SOURCEDIR}/ectrans.log"
-    git fetch --depth 1 origin c8c5c6100bb62b1d9ce15012a0722c0611992ae9 \
+    git fetch --depth 1 origin c8c5c6100bb62b1d9ce15012a0722c0611992ae9 2>&1 \
         | tee -a "${SOURCEDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY CLONED ECTRANS" \
+    	success "==> SUCCESFULLY CLONED ECTRANS"  2>&1\
             | tee -a "${SOURCEDIR}/ectrans.log"
     else
 	    fatal "==> FAILED TO CLONE ECTRANS."
@@ -71,14 +72,14 @@ download () {
 # Build and install ecBuild.
 _build_install_ecbuild () {
     # Build and Install ecBuild.
-    info "==> INSTALLING ECBUILD.."
+    info "==> INSTALLING ECBUILD.." 2>&1 | tee -a "${BUILDDIR}/ecbuild.log"
     cd "${SOURCEDIR}/${ECBUILD_DIR}" || exit 1
 
     # Create build directory and build ecBuild.
     rm -rf "${BUILDDIR:?}/${ECBUILD_DIR:?}" "${INSTALLDIR:?}/${ECBUILD_DIR:?}"
     mkdir -p "${BUILDDIR}/${ECBUILD_DIR}"
     cd "${BUILDDIR}/${ECBUILD_DIR}" || exit 1
-    info "==>\t ECBUILD.."
+    info "==>\t ECBUILD.." 2>&1 | tee -a "${BUILDDIR}/ecbuild.log"
     "${SOURCEDIR}/${ECBUILD_DIR}/bin/ecbuild" \
         --prefix="${INSTALLDIR}/${ECBUILD_DIR}" \
         "${SOURCEDIR}/${ECBUILD_DIR}" | tee "${BUILDDIR}/ecbuild.log"
@@ -91,7 +92,7 @@ _build_install_ecbuild () {
     fi 
 
     # Make ecBuild.
-    info "==>\t MAKE.." | tee -a "${BUILDDIR}/ecbuild.log"
+    info "==>\t MAKE.." 2>&1 | tee -a "${BUILDDIR}/ecbuild.log"
     make 2>&1 | tee -a "${BUILDDIR}/ecbuild.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
@@ -106,7 +107,7 @@ _build_install_ecbuild () {
     make install 2>&1 | tee "${INSTALLDIR}/ecbuild.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE INSTALL ECBUILD" \
+    	success "==> SUCCESFULLY MAKE INSTALL ECBUILD" 2>&1 \
             | tee -a "${INSTALLDIR}/ecbuild.log"
     else
 	    fatal "==> FAILED TO MAKE INSTALL ECBUILD"
@@ -116,14 +117,14 @@ _build_install_ecbuild () {
 # Build and install FIAT.
 _build_install_fiat () {
     # Build and Install FIAT.
-    info "==> INSTALLING FIAT.."
+    info "==> INSTALLING FIAT.." 2>&1 | tee -a "${BUILDDIR}/fiat.log"
     cd "${SOURCEDIR}/${FIAT_DIR}" || exit 1
     
     # Create build directory and build FIAT.
     rm -rf "${BUILDDIR:?}/${FIAT_DIR:?}" "${INSTALLDIR:?}/${FIAT_DIR:?}"
     mkdir -p "${BUILDDIR}/${FIAT_DIR}"
     cd "${BUILDDIR}/${FIAT_DIR}" || exit 1
-    info "==>\t ECBUILD.."
+    info "==>\t ECBUILD.." 2>&1 | tee -a "${BUILDDIR}/fiat.log"
     ecbuild -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${FIAT_DIR}" \
         -DCMAKE_BUILD_TYPE=Release \
         -DENABLE_MPI=ON \
@@ -138,17 +139,17 @@ _build_install_fiat () {
     fi 
 
     # Make FIAT.
-    info "==>\t MAKE.."
+    info "==>\t MAKE.." 2>&1 | tee -a "${BUILDDIR}/fiat.log"
     make 2>&1 | tee -a "${BUILDDIR}/fiat.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE FIAT" | tee -a "${BUILDDIR}/fiat.log"
+    	success "==> SUCCESFULLY MAKE FIAT" 2>&1 | tee -a "${BUILDDIR}/fiat.log"
     else
 	    fatal "==> FAILED TO MAKE FIAT"
     fi
 
     # Install FIAT.
-    info "==>\t MAKE INSTALL.."
+    info "==>\t MAKE INSTALL.." 2>&1 | tee "${INSTALLDIR}/fiat.log"
     make install 2>&1 | tee "${INSTALLDIR}/fiat.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
@@ -162,13 +163,13 @@ _build_install_fiat () {
 # Build and install ecTrans.
 _build_install_ectrans () {
     # Build and Install ecTrans.
-    info "==> Installing ecTrans.."
+    info "==> Installing ecTrans.." 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
 
     # Create build directory and build ecTrans.
     rm -rf "${BUILDDIR:?}/${ECTRANS_DIR:?}" "${INSTALLDIR:?}/${ECTRANS_DIR:?}"
     mkdir -p "${BUILDDIR}/${ECTRANS_DIR}"
     cd "${BUILDDIR}/${ECTRANS_DIR}" || exit 1
-    info "==>\t ECBUILD.."
+    info "==>\t ECBUILD.." 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
     BUILD_GPU="ON"
     ecbuild -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${ECTRANS_DIR}" \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -184,32 +185,32 @@ _build_install_ectrans () {
         -DENABLE_CUTLASS=OFF \
         -DENABLE_3XTF32=OFF \
         -Dfiat_ROOT="${INSTALLDIR}/${FIAT_DIR}" \
-        "${SOURCEDIR}/${ECTRANS_DIR}" | tee "${BUILDDIR}/ectrans.log"
+        "${SOURCEDIR}/${ECTRANS_DIR}" 2>&1 | tee "${BUILDDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY BUILD ECTRANS WITH ECBUILD" \
+    	success "==> SUCCESFULLY BUILD ECTRANS WITH ECBUILD" 2>&1 \
             | tee -a "${BUILDDIR}/ectrans.log"
     else
 	    fatal "==> FAILED TO BUILD ECTRANS WITH ECBUILD"
     fi 
 
     # Make ecTrans.
-    info "==>\t MAKE.."
-    VERBOSE=1 make -j32 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
+    info "==>\t MAKE.." 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
+    VERBOSE=1 make 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY FIRST MAKE ECTRANS" \
+    	success "==> SUCCESFULLY FIRST MAKE ECTRANS" 2>&1 \
             | tee -a "${BUILDDIR}/ectrans.log"
     else
 	    fatal "==> FAILED TO MAKE ECTRANS"
     fi
 
     # Install ecTrans.
-    info "==>\t MAKE INSTALL.."
+    info "==>\t MAKE INSTALL.." 2>&1 | tee -a "${INSTALLDIR}/ectrans.log"
     make install 2>&1 | tee "${INSTALLDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY MAKE INSTALL ECTRANS" \
+    	success "==> SUCCESFULLY MAKE INSTALL ECTRANS" 2>&1 \
             | tee -a "${INSTALLDIR}/ectrans.log"
     else
 	    fatal "==> FAILED TO MAKE INSTALL ECTRANS"
@@ -253,16 +254,33 @@ detect_and_load_machine() {
             ;;
         "mn5")
             # Setup required modules.
+            # module load \
+            #     cmake/3.29.2 \
+            #     EB/apps \
+            #     CUDA/12.4.0 \
+            #     gcc/13.2.0-nvidia-hpc-sdk \
+            #     OpenBLAS/0.3.24-GCC-13.2.0 \
+            #     LAPACK/3.12.0-GCC-13.2.0 \
+            #     intel/2023.2.0 impi/2021.10.0 fftw/3.3.10
+
             module load \
                 cmake/3.29.2 EB/apps \
                 nvidia-hpc-sdk/24.3 \
-                intel/2023.2.0 impi/2021.10.0 fftw/3.3.10
+                FFTW/3.3.10-GCC-13.2.0
+                # fftw/3.3.10-gcc-nvhpcx
+                # intel/2023.2.0 impi/2021.10.0 fftw/3.3.10
+            # /apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/comm_libs/openmpi/openmpi-3.1.5/share/openmpi
 
             # Set compilers for make/cmake.
             export FC90=nvfortran
             export FC=nvfortran
             export CC=nvc
             export CXX=nvc++
+
+            # export FC90=gfortran
+            # export FC=gfortran
+            # export CC=gcc
+            # export CXX=g++
 
             # Set toolchain.
             export TOOLCHAIN_FILE=${BASEDIR}/../toolchains/toolchain_mn5.cmake
