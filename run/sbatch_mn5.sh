@@ -11,7 +11,6 @@
 
 # Load modules.
 module load \
-    cmake/3.29.2 EB/apps \
     nvidia-hpc-sdk/24.3 \
     fftw/3.3.10-gcc-nvhpcx
 
@@ -40,14 +39,16 @@ rm -rf "$RESULTS"
 mkdir -p "$RESULTS"
 
 # Run ecTrans with given arguments.
-srun --output="$RESULTS/out.%j.%t" --error="$RESULTS/err.%j.%t" --input=none \
-    -- ${INSTALLDIR}/${ECTRANS_DIR}/bin/${BINARY} \
-        --vordiv \
-        --scders \
-        --uvders \
-        --nfld $NFLD \
-        --norms \
-        --niter $NITER
+mpirun -x $OMP_NUM_THREADS -x $PATH -x $LD_LIBRARY_PATH --bind-to core -np 8 --map-by ppr:8:node --output-filename out.4846600 ./ectrans-runner.sh
+
+#mpirun --output="$RESULTS/out.%j.%t" --error="$RESULTS/err.%j.%t" --input=none \
+#    -- ${INSTALLDIR}/${ECTRANS_DIR}/bin/${BINARY} \
+#        --vordiv \
+#        --scders \
+#        --uvders \
+#        --nfld $NFLD \
+#        --norms \
+#        --niter $NITER
 
 # Output succesfull run.
 success "Finished the sbatch run of ecTrans."

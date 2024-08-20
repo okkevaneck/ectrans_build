@@ -196,10 +196,10 @@ _build_install_ectrans () {
 
     # Make ecTrans.
     info "==>\t MAKE.." 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
-    VERBOSE=1 make 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
+    make 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
     retval=$?
     if [[ $retval -eq 0 ]]; then
-    	success "==> SUCCESFULLY FIRST MAKE ECTRANS" 2>&1 \
+    	success "==> SUCCESFULLY MAKE ECTRANS" 2>&1 \
             | tee -a "${BUILDDIR}/ectrans.log"
     else
 	    fatal "==> FAILED TO MAKE ECTRANS"
@@ -257,16 +257,18 @@ detect_and_load_machine() {
             # module load \
             #     cmake/3.29.2 \
             #     EB/apps \
-            #     CUDA/12.4.0 \
-            #     gcc/13.2.0-nvidia-hpc-sdk \
             #     OpenBLAS/0.3.24-GCC-13.2.0 \
             #     LAPACK/3.12.0-GCC-13.2.0 \
-            #     intel/2023.2.0 impi/2021.10.0 fftw/3.3.10
+            #     intel/2023.2.0 impi/2021.10.0 fftw/3.3.10 \
+            #     CUDA/12.4.0 \
+            #     nvidia-hpc-sdk/24.3 
+
+                # gcc/13.2.0-nvidia-hpc-sdk \
 
             module load \
                 cmake/3.29.2 EB/apps \
                 nvidia-hpc-sdk/24.3 \
-                FFTW/3.3.10-GCC-13.2.0
+                fftw/3.3.10-gcc-nvhpcx
                 # fftw/3.3.10-gcc-nvhpcx
                 # intel/2023.2.0 impi/2021.10.0 fftw/3.3.10
             # /apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/comm_libs/openmpi/openmpi-3.1.5/share/openmpi

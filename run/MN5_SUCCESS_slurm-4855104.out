@@ -1,0 +1,191 @@
+load FFTW/3.3.10 (LD_LIBRARY_PATH, LIBRARY_PATH, CPATH, C_INCLUDE_PATH,
+CPLUS_INCLUDE_PATH, PKG_CONFIG_PATH, FFTW_ROOT, FFTW_HOME) 
+[as01r1b14:1005016] Warning: could not find environment variable "6"
+[as01r1b14:1005016] Warning: could not find environment variable "/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/compilers/extras/qd/bin:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/comm_libs/mpi/bin:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/compilers/ucx/bin:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/compilers/bin:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/cuda/bin:/home/bsc/bsc032811/.local/bin:/home/bsc/bsc032811/bin:/apps/modules/bsc/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin"
+[as01r1b14:1005016] Warning: could not find environment variable "/gpfs/apps/MN5/ACC/FFTW/3.3.10/GCC/NVHPCX/lib:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/comm_libs/nvshmem/lib:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/comm_libs/ucx/lib:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/comm_libs/nccl/lib:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/math_libs/lib64:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/compilers/lib:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/compilers/extras/qd/lib:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/cuda/extras/CUPTI/lib64:/apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/cuda/lib64"
+Warning: Failed writing log files to directory [/var/log/nvidia-mps]. No logs will be available.
+
+ecTrans at version: 1.2.0
+commit: c8c5c6100bb62b1d9ce15012a0722c0611992ae9
+GPU version with GPU-aware MPI
+
+Using temporary solution for buffer allocation using ${ECTRANS_GPU_NFLEV}=1       
+ setup_trans: if_uv=            1  if_out_lt=            8  IF_FS_DIR0= 
+           10 IF_FS_INV0=            16  IF_PP=             0 IF_FS=  
+           10
+ setup_trans: sizes1 NUMP=           20
+ ZAS:        65600
+ IZBS :        13120
+ IZCST:        25600
+ DZBST:        16000
+ DZCST:         8200
+ DZCAT:         8000
+ ZGTF :       144100
+ ZIA  :        26560
+ ZSOA1:        25600
+ ZAOA1:        25600
+ ZAIA :        25600
+ ZOA1 :        66400
+ ZOA2 :         6640
+ GPU arrays for m=0 successfully allocated
+ Using OpenACC
+ ===GPU arrays successfully allocated
+ 
+======= Start of runtime parameters =======
+ 
+nsmax     79
+grid      O80
+ndgl      160
+nproc     8
+nthread   6
+nprgpns   4
+nprgpew   2
+nprtrw    4
+nprtrv    2
+ngptot    3560
+ngptotg   28480
+nfld      1
+nlev      1
+nproma    3560
+ngpblks   1
+nspec2    1620
+nspec2g   6480
+luseflt    F
+lvordiv    T
+lscders    T
+luvders    T
+ 
+======= End of runtime parameters =======
+ 
+ 
+ectrans_benchmark initialisation, on     8 tasks, took     0.56 sec
+ 
+======= Start of spectral transforms  =======
+ 
+ ltinv_ctl:TRMTOL_CUDAAWARE
+ ftinv_ctl:TRLTOG_CUDAAWARE
+ ltdir_ctl:TRLTOM_CUDAAWARE
+ znormsp    1.414213562373097     
+time step      1 took  0.5528 | zspvor max err= 0.444E-15 | zspdiv max err= 0.444E-15 | zspsc3a max err= 0.122E-14 | zspsc2 max err= 0.122E-14
+ ltinv_ctl:TRMTOL_CUDAAWARE
+ ftinv_ctl:TRLTOG_CUDAAWARE
+ ltdir_ctl:TRLTOM_CUDAAWARE
+ znormsp    1.414213562373098     
+time step      2 took  0.0216 | zspvor max err= 0.888E-15 | zspdiv max err= 0.888E-15 | zspsc3a max err= 0.233E-14 | zspsc2 max err= 0.233E-14
+ ltinv_ctl:TRMTOL_CUDAAWARE
+ ftinv_ctl:TRLTOG_CUDAAWARE
+ ltdir_ctl:TRLTOM_CUDAAWARE
+ znormsp    1.414213562373100     
+time step      3 took  0.0135 | zspvor max err= 0.133E-14 | zspdiv max err= 0.133E-14 | zspsc3a max err= 0.333E-14 | zspsc2 max err= 0.333E-14
+ ltinv_ctl:TRMTOL_CUDAAWARE
+ ftinv_ctl:TRLTOG_CUDAAWARE
+ ltdir_ctl:TRLTOM_CUDAAWARE
+ znormsp    1.414213562373101     
+time step      4 took  0.0135 | zspvor max err= 0.155E-14 | zspdiv max err= 0.133E-14 | zspsc3a max err= 0.444E-14 | zspsc2 max err= 0.444E-14
+ ltinv_ctl:TRMTOL_CUDAAWARE
+ ftinv_ctl:TRLTOG_CUDAAWARE
+ ltdir_ctl:TRLTOM_CUDAAWARE
+ znormsp    1.414213562373103     
+time step      5 took  0.0135 | zspvor max err= 0.178E-14 | zspdiv max err= 0.178E-14 | zspsc3a max err= 0.544E-14 | zspsc2 max err= 0.544E-14
+ ltinv_ctl:TRMTOL_CUDAAWARE
+ ftinv_ctl:TRLTOG_CUDAAWARE
+ ltdir_ctl:TRLTOM_CUDAAWARE
+ znormsp    1.414213562373104     
+time step      6 took  0.0133 | zspvor max err= 0.222E-14 | zspdiv max err= 0.178E-14 | zspsc3a max err= 0.611E-14 | zspsc2 max err= 0.611E-14
+ ltinv_ctl:TRMTOL_CUDAAWARE
+ ftinv_ctl:TRLTOG_CUDAAWARE
+ ltdir_ctl:TRLTOM_CUDAAWARE
+ znormsp    1.414213562373105     
+time step      7 took  0.0135 | zspvor max err= 0.266E-14 | zspdiv max err= 0.244E-14 | zspsc3a max err= 0.722E-14 | zspsc2 max err= 0.722E-14
+ ltinv_ctl:TRMTOL_CUDAAWARE
+ ftinv_ctl:TRLTOG_CUDAAWARE
+ ltdir_ctl:TRLTOM_CUDAAWARE
+ znormsp    1.414213562373107     
+time step      8 took  0.0135 | zspvor max err= 0.311E-14 | zspdiv max err= 0.266E-14 | zspsc3a max err= 0.833E-14 | zspsc2 max err= 0.833E-14
+ ltinv_ctl:TRMTOL_CUDAAWARE
+ ftinv_ctl:TRLTOG_CUDAAWARE
+ ltdir_ctl:TRLTOM_CUDAAWARE
+ znormsp    1.414213562373108     
+time step      9 took  0.0134 | zspvor max err= 0.355E-14 | zspdiv max err= 0.355E-14 | zspsc3a max err= 0.910E-14 | zspsc2 max err= 0.910E-14
+ ltinv_ctl:TRMTOL_CUDAAWARE
+ ftinv_ctl:TRLTOG_CUDAAWARE
+ ltdir_ctl:TRLTOM_CUDAAWARE
+ znormsp    1.414213562373109     
+time step     10 took  0.0134 | zspvor max err= 0.400E-14 | zspdiv max err= 0.400E-14 | zspsc3a max err= 0.988E-14 | zspsc2 max err= 0.988E-14
+ 
+======= End of spectral transforms  =======
+ 
+max error zspvor(1:nlev,:)    =  0.400E-14
+max error zspdiv(1:nlev,:)    =  0.400E-14
+max error zspsc3a(1:nlev,:,1) =  0.988E-14
+max error zspsc2(1:1,:)       =  0.988E-14
+ 
+max error combined =          =  0.988E-14
+ 
+======= Start of time step stats =======
+ 
+Inverse transforms
+------------------
+avg  (s):   0.0528
+min  (s):   0.0102
+max  (s):   0.4516
+med  (s):   0.0106
+ 
+Direct transforms
+-----------------
+avg  (s):   0.0152
+min  (s):   0.0023
+max  (s):   0.1433
+med  (s):   0.0026
+ 
+Inverse-direct transforms
+-------------------------
+avg  (s):   0.0679
+min  (s):   0.0129
+max  (s):   0.5528
+med  (s):   0.0132
+loop (s):   0.6842
+ 
+======= End of time step stats =======
+ 
+===-=== START OF TIMING STATISTICS ===-===
+ 
+STATS FOR ALL TASKS
+ NUM ROUTINE                                     CALLS      MEAN(ms)       MAX(ms)   FRAC(%)  UNBAL(%)
+   0 PROGRAM        - Total                          1      1244.429      1244.441    100.00      0.00
+   1 SETUP_TRANS0   - Setup ecTrans                  1       510.771       519.858     41.77      0.73
+   2 SETUP_TRANS    - Setup ecTrans handle           1        38.179        81.538      6.55      3.48
+   3 TIME STEP      - Time step                     10        68.423        68.425     54.98      0.00
+   4 INV_TRANS      - Inverse transform             10        52.760        55.578     44.66      2.27
+   5 DIR_TRANS      - Direct transform              10        15.189        17.998     14.46      2.26
+   6 NORMS          - Norm comp. (optional)         10         0.474         0.634      0.51      0.13
+ 102 LTINV_CTL      - Inv. Legendre transform       10         9.357         9.947      7.99      0.47
+ 103 LTDIR_CTL      - Dir. Legendre transform       10         0.631         0.878      0.71      0.20
+ 106 FTDIR_CTL      - Dir. Fourier transform        10         3.023         3.529      2.84      0.41
+ 107 FTINV_CTL      - Inv. Fourier transform        10        10.795        13.233     10.63      1.96
+ 140 SULEG          - Comp. of Leg. poly.            1        18.312        19.219      1.54      0.07
+ 152 LTINV_CTL      - M to L transposition          10        22.818        24.090     19.36      1.02
+ 153 LTDIR_CTL      - L to M transposition          10         0.531         0.956      0.77      0.34
+ 157 FTINV_CTL      - L to G transposition          10         9.742        15.338     12.33      4.50
+ 158 FTDIR_CTL      - G to L transposition          10        10.947        13.391     10.76      1.96
+ 400 GSTATS         - GSTATS itself                609         0.001         0.001      0.06      0.00
+ 410                                                10        22.188        22.882     18.39      0.56
+ 411                                                10         0.049         0.051      0.04      0.00
+ 412                                                10         6.766         9.487      7.62      2.19
+ 413                                                10         7.369         7.928      6.37      0.45
+ 420                                                10         0.460         0.887      0.71      0.34
+ 421                                                10         0.607         1.186      0.95      0.47
+ 422                                                10         2.275         5.034      4.05      2.22
+ 423                                                10         2.936         5.643      4.53      2.18
+ 430                                                20         0.037         0.044      0.07      0.01
+ 431                                                30         0.045         0.051      0.11      0.02
+ 440                                                10        15.187        17.995     14.46      2.26
+ 441                                                10        52.757        55.576     44.66      2.27
+TOTAL MEASURED IMBALANCE =       0.0 SECONDS,  0.0 PERCENT
+TOTAL WALLCLOCK TIME       1.244 CPU TIME      1.244 VECTOR TIME       1.244
+
+
+===-=== END   OF TIMING STATISTICS ===-===
+
+[1;32m \u2714 ~ Finished the sbatch run of ecTrans.[0m
+
