@@ -254,39 +254,16 @@ detect_and_load_machine() {
             ;;
         "mn5")
             # Setup required modules.
-            # module load \
-            #     cmake/3.29.2 \
-            #     EB/apps \
-            #     OpenBLAS/0.3.24-GCC-13.2.0 \
-            #     LAPACK/3.12.0-GCC-13.2.0 \
-            #     intel/2023.2.0 impi/2021.10.0 fftw/3.3.10 \
-            #     CUDA/12.4.0 \
-            #     nvidia-hpc-sdk/24.3 
-
-                # gcc/13.2.0-nvidia-hpc-sdk \
-
             module load \
                 cmake/3.29.2 EB/apps \
                 nvidia-hpc-sdk/24.3 \
                 fftw/3.3.10-gcc-nvhpcx
-                # fftw/3.3.10-gcc-nvhpcx
-                # intel/2023.2.0 impi/2021.10.0 fftw/3.3.10
-            # /apps/ACC/NVIDIA-HPC-SDK/24.3/Linux_x86_64/24.3/comm_libs/openmpi/openmpi-3.1.5/share/openmpi
 
             # Set compilers for make/cmake.
             export FC90=nvfortran
             export FC=nvfortran
             export CC=nvc
             export CXX=nvc++
-
-            # export FC90=gfortran
-            # export FC=gfortran
-            # export CC=gcc
-            # export CXX=g++
-
-            # Set toolchain.
-            export TOOLCHAIN_FILE=${BASEDIR}/../toolchains/toolchain_mn5.cmake
-            export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
             ;;
         *)
             fatal "Passed argument '$machine' not in [lumi|leonardo|mn5]."
