@@ -251,6 +251,24 @@ detect_and_load_machine() {
             export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
             ;;
         "leonardo")
+            # Setup required modules.
+            module load \
+                git \
+                cmake/3.27.7 \
+                nvhpc/24.3 \ 
+                fftw/3.3.10--openmpi--4.1.6--nvhpc--24.3
+                # openmpi/4.1.6--nvhpc--24.3
+
+    
+                # cmake/3.29.2 EB/apps \
+                # nvidia-hpc-sdk/24.3 \
+                # fftw/3.3.10-gcc-nvhpcx
+
+            # Set compilers for make/cmake.
+            export FC90=nvfortran
+            export FC=nvfortran
+            export CC=nvc
+            export CXX=nvc++
             ;;
         "mn5")
             # Setup required modules.
