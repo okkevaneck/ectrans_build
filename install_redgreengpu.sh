@@ -255,7 +255,7 @@ detect_and_load_machine() {
             module load \
                 git \
                 cmake/3.27.7 \
-                nvhpc/24.3 \ 
+                nvhpc/24.3 \
                 fftw/3.3.10--openmpi--4.1.6--nvhpc--24.3
                 # openmpi/4.1.6--nvhpc--24.3
 
