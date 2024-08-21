@@ -257,12 +257,6 @@ detect_and_load_machine() {
                 cmake/3.27.7 \
                 nvhpc/24.3 \
                 fftw/3.3.10--openmpi--4.1.6--nvhpc--24.3
-                # openmpi/4.1.6--nvhpc--24.3
-
-    
-                # cmake/3.29.2 EB/apps \
-                # nvidia-hpc-sdk/24.3 \
-                # fftw/3.3.10-gcc-nvhpcx
 
             # Set compilers for make/cmake.
             export FC90=nvfortran

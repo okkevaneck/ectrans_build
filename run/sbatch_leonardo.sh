@@ -23,7 +23,7 @@ source ../helpers/helpers.sh
 source ../helpers/dirs.sh
 
 # Set binary and results directory name to ENV value or default.
-[ -z "$BINARY" ] && BINARY="ectrans-benchmark-gpu-dp"
+[ -z "$BINARY" ] && BINARY="ectrans-benchmark-cpu-dp"
 [ -z "$RESDIR" ] && RESDIR="sbatch"
 
 # Set runtime arguments to ENV value or default.
