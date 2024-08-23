@@ -10,6 +10,7 @@ export BASEDIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd
 export SOURCEDIR=${BASEDIR}/../src/sources
 export BUILDDIR=${BASEDIR}/../src/build
 export INSTALLDIR=${BASEDIR}/../src/install
+export JOBDIR=${BASEDIR}/../jobs
 
 # Export results folders.
 export RESULTS_DIR=${BASEDIR}/../results

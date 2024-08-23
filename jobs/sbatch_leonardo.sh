@@ -3,16 +3,18 @@
 # This file runs the ecTrans dwarf within a submitted job.
 # ------------------------------------------------------------------------------
 #SBATCH --job-name=ectrans_sbatch
-#SBATCH --qos=acc_debug
+#SBATCH --partition=boost_usr_prod
+#SBATCH --qos=boost_qos_dbg
 #SBATCH --exclusive
-#SBATCH --account=bsc32
+#SBATCH --mem=0
+#SBATCH --account=DestE_330_24
 #SBATCH --nodes=1
-#SBATCH --time=00:1:30
+#SBATCH --gpus-per-node=4
+#SBATCH --ntasks=4
+#SBATCH --time=00:01:30
 
 # Load modules.
-module load \
-    nvidia-hpc-sdk/24.3 \
-    fftw/3.3.10-gcc-nvhpcx
+module load nvhpc/24.3 fftw/3.3.10--openmpi--4.1.6--nvhpc--24.3
 
 # Load helpers for color printing.
 source ../helpers/helpers.sh
@@ -21,16 +23,16 @@ source ../helpers/helpers.sh
 source ../helpers/dirs.sh
 
 # Set binary and results directory name to ENV value or default.
-[ -z "$BINARY" ] && BINARY="ectrans-benchmark-cpu-dp"
-[ -z "$RESDIR" ] && RESDIR="sbatch"
+[ -z "$BINARY" ] && BINARY="ectrans-benchmark-gpu-dp"
+[ -z "$RESDIR" ] && RESDIR="${SLURM_JOB_ID}.out"
 
 # Set runtime arguments to ENV value or default.
-[ -z "$NPROMA" ] && NPROMA=32
 [ -z "$NFLD" ] && NFLD=1
 [ -z "$NLEV" ] && NLEV=10
+[ -z "$TRUNCATION" ] && TRUNCATION=79
 [ -z "$NITER" ] && NITER=10
 
-export OMP_NUM_THREADS=6  # TODO: Review required number of threads.
+export OMP_NUM_THREADS=6
 export MPICH_GPU_SUPPORT_ENABLED=1
 
 # Specify where to store results.
@@ -39,13 +41,17 @@ rm -rf "$RESULTS"
 mkdir -p "$RESULTS"
 
 # Run ecTrans with given arguments.
-mpirun \
-    -x $OMP_NUM_THREADS \
-    -x $PATH \
-    -x $LD_LIBRARY_PATH \
-    --output-filename "$RESULTS/slurm_$SLURM_JOB_ID.out" \
-    "${INSTALLDIR}/${ECTRANS_DIR}/bin/ectrans-benchmark-gpu-dp" \
-    --vordiv --scders --uvders --nfld 1 --norms --niter 10
+ARGS="--vordiv --scders --uvders --nfld $NFLD \
+        --norms --niter $NITER"
+srun --output="$RESULTS/out.%j.%t" --error="$RESULTS/err.%j.%t" --input=none \
+    "${INSTALLDIR}/${ECTRANS_DIR}/bin/${BINARY}" \
+        --vordiv \
+        --scders \
+        --uvders \
+        --norms \
+        --nfld $NFLD \
+        --truncation $TRUNCATION \
+        --niter $NITER
 
 # Output succesfull run.
 success "Finished the sbatch run of ecTrans."

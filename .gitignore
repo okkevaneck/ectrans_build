@@ -18,5 +18,10 @@ profiling/**/res-*/**/*.sysinfo.txt
 fort.20
 core
 
+# Ignore experiment results.
+experiments/**/GPU/
+experiments/**/CPU/
+experiments/**/slurm-*.out
+
 # Ignore Python environments.
 **/venv/
