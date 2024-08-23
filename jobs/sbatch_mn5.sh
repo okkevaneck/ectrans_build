@@ -3,26 +3,21 @@
 # This file runs the ecTrans dwarf within a submitted job.
 # ------------------------------------------------------------------------------
 #SBATCH --job-name=ectrans_sbatch
-#SBATCH --qos=acc_debug
+#SBATCH --qos=acc_ehpc
 #SBATCH --exclusive
-#SBATCH --account=bsc32
+#SBATCH --account=ehpc01
 #SBATCH --nodes=1
+#SBATCH --tasks-per-node=4
 #SBATCH --gpus-per-node=4
-#SBATCH --time=00:1:30
+#SBATCH --time=00:01:30
 
 # Load modules.
 module load \
     nvidia-hpc-sdk/24.3 \
     fftw/3.3.10-gcc-nvhpcx
 
-# Load helpers for color printing.
-source ../helpers/helpers.sh
-
-# Load directory structure of installation.
-source ../helpers/dirs.sh
-
 # Set binary and results directory name to ENV value or default.
-[ -z "$BINARY" ] && BINARY="${INSTALLDIR}/${ECTRANS_DIR}/bin/${BINARY}"
+[ -z "$BINARY" ] && BINARY="ectrans-benchmark-gpu-dp"
 [ -z "$RESDIR" ] && RESDIR="${RESULTS_DIR}/${SLURM_JOB_ID}.out"
 
 # Set runtime arguments to ENV value or default.
@@ -31,17 +26,13 @@ source ../helpers/dirs.sh
 [ -z "$TRUNCATION" ] && TRUNCATION=79
 [ -z "$NITER" ] && NITER=10
 
-export OMP_NUM_THREADS=6  # TODO: Review required number of threads.
+export OMP_NUM_THREADS=6
 export MPICH_GPU_SUPPORT_ENABLED=1
-
-# Create clean results directory.
-rm -rf "$RESDIR"
-mkdir -p "$RESDIR"
 
 # Run ecTrans with given arguments.
 mpirun \
-    --output-filename "$RESDIR/slurm_$SLURM_JOB_ID.out" \
-    ${BINARY} \
+    --output-filename "$RESDIR/slurm_$SLURM_JOB_ID" \
+    "${INSTALLDIR:?}/${ECTRANS_DIR:?}/bin/${BINARY:?}" \
         --vordiv \
         --scders \
         --uvders \
@@ -51,4 +42,4 @@ mpirun \
         --niter $NITER
 
 # Output succesfull run.
-success "Finished the sbatch run of ecTrans."
+echo "Finished the sbatch run of ecTrans."
