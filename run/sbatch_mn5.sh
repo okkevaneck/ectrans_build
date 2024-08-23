@@ -43,11 +43,9 @@ mpirun \
     -x $OMP_NUM_THREADS \
     -x $PATH \
     -x $LD_LIBRARY_PATH \
-    --bind-to core \
-    -np 8 \
-    --map-by ppr:8:node \
-    --output-filename out.4846600 \
-    ./ectrans-runner.sh
+    --output-filename "$RESULTS/slurm_$SLURM_JOB_ID.out" \
+    "${INSTALLDIR}/${ECTRANS_DIR}/bin/ectrans-benchmark-gpu-dp" \
+    --vordiv --scders --uvders --nfld 1 --norms --niter 10
 
 # Output succesfull run.
 success "Finished the sbatch run of ecTrans."
