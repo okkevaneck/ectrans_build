@@ -13,14 +13,13 @@ EXPDIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 # Define experiment details.
 BIN=ectrans-benchmark-gpu-dp
-NITER=5
-TRUNCATION=4799
+NITER=1
+TRUNCATION=1599
 OUTDIR_PREFIX="$EXPDIR/GPU"
 TIMELIMIT="00:20:00"
-# NODES="4 8 16 32"
-NODES="32"
+NODES="4 8 16 32"
 
-# Debug queue can maximumly have 2 jobs inside.
+# Schedule a job for each number of nodes.
 for N in $NODES; do
     # Set path of output directory and set number of tasks to 4 (GPUs) per node.
     OUTDIR=${OUTDIR_PREFIX:?}/N${N}_T${TRUNCATION}_I${NITER}
