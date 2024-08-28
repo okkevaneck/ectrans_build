@@ -17,12 +17,13 @@ NITER=3
 TRUNCATION=1599
 OUTDIR_PREFIX="$EXPDIR/GPU"
 TIMELIMIT="00:20:00"
-NODES="4"
+NODES="4 8 16 32"
 
 # Schedule a job for each number of nodes.
 for N in $NODES; do
-    # Set path of output directory and set number of tasks to 4 (GPUs) per node.
+    # Set path of output directory and create it.
     OUTDIR=${OUTDIR_PREFIX:?}/N${N}_T${TRUNCATION}_I${NITER}
+    mkdir -p $OUTDIR
 
     # Submit job with correct variables set.
     export BINARY=$BIN

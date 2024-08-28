@@ -21,7 +21,7 @@ NODES="4 8 16 32"
 
 # Schedule a job for each number of nodes.
 for N in $NODES; do
-    # Set path of output directory and set number of tasks to 4 (GPUs) per node.
+    # Set path of output directory.
     OUTDIR=${OUTDIR_PREFIX:?}/N${N}_T${TRUNCATION}_I${NITER}
 
     # Submit job with correct variables set.

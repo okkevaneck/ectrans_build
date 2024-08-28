@@ -16,15 +16,9 @@
 # Load modules.
 module load nvhpc/24.3 fftw/3.3.10--openmpi--4.1.6--nvhpc--24.3
 
-# Load helpers for color printing.
-source ../helpers/helpers.sh
-
-# Load directory structure of installation.
-source ../helpers/dirs.sh
-
 # Set binary and results directory name to ENV value or default.
 [ -z "$BINARY" ] && BINARY="ectrans-benchmark-gpu-dp"
-[ -z "$RESDIR" ] && RESDIR="${SLURM_JOB_ID}.out"
+[ -z "$RESDIR" ] && RESDIR="${RESULTS_DIR}/${SLURM_JOB_ID}.out"
 
 # Set runtime arguments to ENV value or default.
 [ -z "$NFLD" ] && NFLD=1
@@ -48,4 +42,4 @@ mpirun \
         --niter $NITER
 
 # Output succesfull run.
-success "Finished the sbatch run of ecTrans."
+echo "Finished the sbatch run of ecTrans."
