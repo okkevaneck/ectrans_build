@@ -4,27 +4,21 @@
 # ------------------------------------------------------------------------------
 #SBATCH --job-name=ectrans_sbatch
 #SBATCH --partition=boost_usr_prod
-#SBATCH --qos=boost_qos_dbg
+#SBATCH --qos=normal
 #SBATCH --exclusive
 #SBATCH --mem=0
 #SBATCH --account=DestE_330_24
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=4
-#SBATCH --ntasks=4
+#SBATCH --tasks-per-node=4
 #SBATCH --time=00:01:30
 
 # Load modules.
 module load nvhpc/24.3 fftw/3.3.10--openmpi--4.1.6--nvhpc--24.3
 
-# Load helpers for color printing.
-source ../helpers/helpers.sh
-
-# Load directory structure of installation.
-source ../helpers/dirs.sh
-
 # Set binary and results directory name to ENV value or default.
 [ -z "$BINARY" ] && BINARY="ectrans-benchmark-gpu-dp"
-[ -z "$RESDIR" ] && RESDIR="${SLURM_JOB_ID}.out"
+[ -z "$RESDIR" ] && RESDIR="${RESULTS_DIR}/${SLURM_JOB_ID}.out"
 
 # Set runtime arguments to ENV value or default.
 [ -z "$NFLD" ] && NFLD=1
@@ -35,16 +29,10 @@ source ../helpers/dirs.sh
 export OMP_NUM_THREADS=6
 export MPICH_GPU_SUPPORT_ENABLED=1
 
-# Specify where to store results.
-RESULTS="$RESULTS_DIR/$RESDIR"
-rm -rf "$RESULTS"
-mkdir -p "$RESULTS"
-
 # Run ecTrans with given arguments.
-ARGS="--vordiv --scders --uvders --nfld $NFLD \
-        --norms --niter $NITER"
-srun --output="$RESULTS/out.%j.%t" --error="$RESULTS/err.%j.%t" --input=none \
-    "${INSTALLDIR}/${ECTRANS_DIR}/bin/${BINARY}" \
+mpirun \
+    --output-filename "$RESDIR/slurm_$SLURM_JOB_ID" \
+    "${INSTALLDIR:?}/${ECTRANS_DIR:?}/bin/${BINARY:?}" \
         --vordiv \
         --scders \
         --uvders \
@@ -54,4 +42,4 @@ srun --output="$RESULTS/out.%j.%t" --error="$RESULTS/err.%j.%t" --input=none \
         --niter $NITER
 
 # Output succesfull run.
-success "Finished the sbatch run of ecTrans."
+echo "Finished the sbatch run of ecTrans."
