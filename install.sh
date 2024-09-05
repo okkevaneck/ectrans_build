@@ -277,8 +277,23 @@ detect_and_load_machine() {
             export CC=nvc
             export CXX=nvc++
             ;;
+        "karolina")
+            # Setup required modules.
+            module load \
+                CMake/3.26.3-GCCcore-12.3.0 \
+                nvompi/2024.3 \
+                FFTW/3.3.10-NVHPC-24.3-CUDA-12.3.0
+
+                # CMake/3.20.1 \
+                # NVHPC/24.3-CUDA-12.3.0 \
+            # Set compilers for make/cmake.
+            export FC90=nvfortran
+            export FC=nvfortran
+            export CC=nvc
+            export CXX=nvc++
+            ;;
         *)
-            fatal "Passed argument '$machine' not in [lumi|leonardo|mn5]."
+            fatal "Passed argument '$machine' not in [lumi|leonardo|mn5|karolina]."
             ;;
     esac
 
