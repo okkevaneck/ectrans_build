@@ -165,6 +165,19 @@ _build_install_ectrans () {
     # Build and Install ecTrans.
     info "==> Installing ecTrans.." 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
 
+    # Change compilers to Score-P compilers if specified.
+    if [ "$PERF" = "scorep" ]; then
+        info "==> Changed compilers for Score-P instrumentation" \
+            2>&1 | tee -a "${BUILDDIR}/ectrans.log" 
+        export FC90=scorep-nvfortran
+        export FC=scorep-nvfortran
+        export CC=scorep-nvc
+        export CXX=scorep-nvc++
+
+        # Enable OpenACC tracing with Score-P, as it's not detected by default.
+        export SCOREP_WRAPPER_INSTRUMENTER_FLAGS="--openacc"
+    fi
+
     # Create build directory and build ecTrans.
     rm -rf "${BUILDDIR:?}/${ECTRANS_DIR:?}" "${INSTALLDIR:?}/${ECTRANS_DIR:?}"
     mkdir -p "${BUILDDIR}/${ECTRANS_DIR}"
@@ -227,6 +240,9 @@ build_install_all () {
 # Parse what supercomputer to install on, set required variables and load 
 # modules. First argument is the name of the supercomputer.
 detect_and_load_machine() {
+    # Deduct if performance tools have to be loaded according to env var.
+    [ -z "$PERF" ] && info "No performance tools set through PERF env var." 
+    
     #First arg is machine name.
     machine=$1
     
@@ -279,13 +295,19 @@ detect_and_load_machine() {
             ;;
         "karolina")
             # Setup required modules.
+            module --force purge
             module load \
-                CMake/3.26.3-GCCcore-12.3.0 \
-                nvompi/2024.3 \
-                FFTW/3.3.10-NVHPC-24.3-CUDA-12.3.0
+                CMake/3.24.3-GCCcore-12.2.0 \
+                NVHPC/24.3-CUDA-12.3.0 \
+                FFTW/3.3.10-NVHPC-24.3-CUDA-12.3.0 \
+                OpenMPI/4.1.6-NVHPC-24.3-CUDA-12.3.0 \
+                Score-P/8.4-NVHPC-24.3-CUDA-12.3.0 
+            
+            if [ ! -z "$PERF" ] && [ "$PERF" = "scorep" ]; then
+                info "Loading Score-P module for performance testing.."
+                module load Score-P/8.4-NVHPC-24.3-CUDA-12.3.0
+            fi
 
-                # CMake/3.20.1 \
-                # NVHPC/24.3-CUDA-12.3.0 \
             # Set compilers for make/cmake.
             export FC90=nvfortran
             export FC=nvfortran

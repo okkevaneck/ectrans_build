@@ -8,6 +8,9 @@ source ../../helpers/helpers.sh
 # Load directory structure of installation.
 source ../../helpers/dirs.sh
 
+# Export runtime variables for enabling Score-P instrumentation and tracing.
+export SCOREP_OPENACC_ENABLE=yes
+
 # EXPDIR is the PWD of this file.
 EXPDIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
@@ -16,7 +19,7 @@ BIN=ectrans-benchmark-gpu-dp
 NITER=1
 TRUNCATION=1599
 OUTDIR_PREFIX="$EXPDIR/GPU"
-TIMELIMIT="00:20:00"
+TIMELIMIT="00:03:00"
 NODES="4"
 
 # Schedule a job for each number of nodes.

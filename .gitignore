@@ -1,3 +1,6 @@
+# Ignore Score-P results.
+experiments/karolina/scorep-*/
+
 # Ignore Extrae results.
 **/*.pcf
 **/*.prv

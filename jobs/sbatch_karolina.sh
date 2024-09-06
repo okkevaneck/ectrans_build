@@ -10,6 +10,7 @@
 #SBATCH --tasks-per-node=8
 #SBATCH --gpus-per-node=8
 #SBATCH --time=00:05:00
+##SBATCH --reservation=dd-24-88_2024-09-05T13:00:00_2024-09-05T17:00:00_4_qgpu
 
 # Load modules.
 module load \
@@ -27,7 +28,7 @@ module load \
 [ -z "$TRUNCATION" ] && TRUNCATION=79
 [ -z "$NITER" ] && NITER=10
 
-export OMP_NUM_THREADS=6
+export OMP_NUM_THREADS=1
 export MPICH_GPU_SUPPORT_ENABLED=1
 
 # Run ecTrans with given arguments.
