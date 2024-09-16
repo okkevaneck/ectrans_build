@@ -250,11 +250,15 @@ detect_and_load_machine() {
     case $machine in
         "lumi")
             # Load modules.
-            module load LUMI/23.03 partition/G PrgEnv-cray \
-                cpe/23.09 craype-x86-trento craype-accel-amd-gfx90a
-            module load cray-mpich cray-libsci cray-fftw cray-python
-            module load buildtools
-            module load rocm/5.2.3
+            module load LUMI/24.03 partition/G cpe/24.03 PrgEnv-cray/8.5.0 \
+                craype-x86-trento craype-accel-amd-gfx90a rocm/6.0.3 \
+                cray-fftw/3.3.10.7 cray-libsci/24.03.0 buildtools/24.03
+
+            # module load LUMI/23.03 partition/G PrgEnv-cray \
+            #     cpe/23.09 craype-x86-trento craype-accel-amd-gfx90a
+            # module load cray-mpich cray-libsci cray-fftw cray-python
+            # module load buildtools
+            # module load rocm/5.2.3
 
             # Set compilers for make/cmake.
             export FC90=ftn
