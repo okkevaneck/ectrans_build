@@ -21,8 +21,9 @@ NODES="4 8 16 32"
 
 # Schedule a job for each number of nodes.
 for N in $NODES; do
-    # Set path of output directory.
+    # Set path of output directory and create it.
     OUTDIR=${OUTDIR_PREFIX:?}/N${N}_T${TRUNCATION}_I${NITER}
+    mkdir -p $OUTDIR
 
     # Submit job with correct variables set.
     export BINARY=$BIN
@@ -31,7 +32,7 @@ for N in $NODES; do
     export TRUNCATION=$TRUNCATION
     JOBID=$(sbatch --parsable -N $N --time=$TIMELIMIT \
         --gpus-per-node=0 \
-        --output=$OUTDIR/slurm-%j.out ${JOBDIR:?}/sbatch_mn5.sh)
+        --output=$OUTDIR/slurm-%j.out ${JOBDIR:?}/sbatch_leonardo.sh)
     info "==> Submitted GPU on $N nodes with JobID $JOBID"
 done
 
