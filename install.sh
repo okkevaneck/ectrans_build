@@ -241,7 +241,7 @@ build_install_all () {
 # modules. First argument is the name of the supercomputer.
 detect_and_load_machine() {
     # Deduct if performance tools have to be loaded according to env var.
-    [ -z "$PERF" ] && info "No performance tools set through PERF env var." 
+    [ -z "$PERF" ] && info "No performance tools set through PERF env var."
     
     #First arg is machine name.
     machine=$1
@@ -287,6 +287,14 @@ detect_and_load_machine() {
                 nvidia-hpc-sdk/24.3 \
                 fftw/3.3.10-gcc-nvhpcx
 
+            # Load a performance tool if required.
+            if [ "$PERF" = "scorep" ]; then
+                module load \
+                    nvidia-hpc-sdk/23.11-cuda11.8 \
+                    cuda/11.8 \
+                    scorep/8.4
+            fi
+
             # Set compilers for make/cmake.
             export FC90=nvfortran
             export FC=nvfortran
@@ -303,7 +311,8 @@ detect_and_load_machine() {
                 OpenMPI/4.1.6-NVHPC-24.3-CUDA-12.3.0 \
                 Score-P/8.4-NVHPC-24.3-CUDA-12.3.0 
             
-            if [ ! -z "$PERF" ] && [ "$PERF" = "scorep" ]; then
+            # Load a performance tool if required.
+            if [ "$PERF" = "scorep" ]; then
                 info "Loading Score-P module for performance testing.."
                 module load Score-P/8.4-NVHPC-24.3-CUDA-12.3.0
             fi
