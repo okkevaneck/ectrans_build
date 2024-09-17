@@ -66,6 +66,22 @@ download () {
 	    fatal "==> FAILED TO CLONE ECTRANS."
     fi 
     git checkout FETCH_HEAD 
+
+    # If on LUMI, apply ecTrans patch for rocm/6.0.3 support.
+    if [ "$MACHINE" = "lumi" ]; then
+        info "==>\t APPLYING ROCM/6 PATCH.." 2>&1 \
+            | tee -a "${SOURCEDIR}/ectrans.log"
+        git apply ${BASEDIR}/../patches/ectrans_rocm6.patch
+        retval=$?
+        if [[ $retval -eq 0 ]]; then
+            success "==> SUCCESFULLY APPLIED ROCM/6 PATCH" 2>&1 \
+                | tee -a "${SOURCEDIR}/ectrans.log"
+        else
+            fatal "==> FAILED TO APPLY ROCM/6 PATCH"
+        fi
+    fi
+    
+    # Move pack to sources level.
     cd ..
 }
 
@@ -165,6 +181,13 @@ _build_install_ectrans () {
     # Build and Install ecTrans.
     info "==> Installing ecTrans.." 2>&1 | tee -a "${BUILDDIR}/ectrans.log"
 
+    # If on LUMI, unload the toolchain as it breaks OpenMP linking.
+    if [ "$MACHINE" = "lumi" ]; then
+        info "==>\t UNSET ECBUILD_TOOLCHAIN" 2>&1 \
+            | tee -a "${BUILDDIR}/ectrans.log"
+        unset ECBUILD_TOOLCHAIN
+    fi
+
     # Change compilers to Score-P compilers if specified.
     if [ "$PERF" = "scorep" ]; then
         info "==> Changed compilers for Score-P instrumentation" \
@@ -249,28 +272,26 @@ detect_and_load_machine() {
     # Parse machine name and act accordingly.
     case $machine in
         "lumi")
+            export MACHINE=lumi
+
             # Load modules.
             module load LUMI/24.03 partition/G cpe/24.03 PrgEnv-cray/8.5.0 \
                 craype-x86-trento craype-accel-amd-gfx90a rocm/6.0.3 \
                 cray-fftw/3.3.10.7 cray-libsci/24.03.0 buildtools/24.03
-
-            # module load LUMI/23.03 partition/G PrgEnv-cray \
-            #     cpe/23.09 craype-x86-trento craype-accel-amd-gfx90a
-            # module load cray-mpich cray-libsci cray-fftw cray-python
-            # module load buildtools
-            # module load rocm/5.2.3
 
             # Set compilers for make/cmake.
             export FC90=ftn
             export FC=ftn
             export CC=cc
             export CXX=cc
-
+            
             # Set toolchain.
-            export TOOLCHAIN_FILE=${BASEDIR}/../toolchains/toolchain_lumi.cmake
+            export TOOLCHAIN_FILE=${BASEDIR}/../patches/toolchain_lumi.cmake
             export ECBUILD_TOOLCHAIN="${TOOLCHAIN_FILE}"
             ;;
         "leonardo")
+            export MACHINE=leonardo
+
             # Setup required modules.
             module load \
                 git \
@@ -285,6 +306,8 @@ detect_and_load_machine() {
             export CXX=nvc++
             ;;
         "mn5")
+            export MACHINE=mn5
+
             # Setup required modules.
             module load \
                 cmake/3.29.2 EB/apps \
@@ -306,6 +329,8 @@ detect_and_load_machine() {
             export CXX=nvc++
             ;;
         "karolina")
+            export MACHINE=karolina
+
             # Setup required modules.
             module --force purge
             module load \
