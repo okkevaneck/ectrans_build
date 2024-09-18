@@ -28,7 +28,7 @@ module load \
 [ -z "$TRUNCATION" ] && TRUNCATION=79
 [ -z "$NITER" ] && NITER=10
 
-export OMP_NUM_THREADS=1
+export OMP_NUM_THREADS=6
 export MPICH_GPU_SUPPORT_ENABLED=1
 
 # Run ecTrans with given arguments.
