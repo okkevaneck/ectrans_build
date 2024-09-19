@@ -1,41 +1,45 @@
 #!/usr/bin/env bash
 # ------------------------------------------------------------------------------
-# This file runs ecTrans dwarf experiments on MareNostrum 5.
+# This file runs ecTrans dwarf GPU experiments on LUMI.
 # ------------------------------------------------------------------------------
-source helpers.sh
+# Load helpers for color printing.
+source ../../helpers/helpers.sh
+
+# Load directory structure of installation.
+source ../../helpers/dirs.sh
 
 # EXPDIR is the PWD of this file.
 EXPDIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 # Define experiment details.
 BIN=ectrans-benchmark-gpu-dp
-NITER=10
-OUTDIR="$EXPDIR/GPU"
-TIMELIMIT="00:30:00"
-NODES="1 4 8 16 32"
+NITER=3
+TRUNCATION=1599
+OUTDIR_PREFIX="$EXPDIR/GPU"
+TIMELIMIT="00:20:00"
+NODES="4"
 
 # Debug queue can maximumly have 2 jobs inside.
 for N in $NODES; do
+    # Wait for queque space.
     CONCURRENT_DEBUG_JOBS=$(squeue --me -p acc_debug | wc -l)
     while [ $CONCURRENT_DEBUG_JOBS -eq 3 ]; do
         sleep 10
         CONCURRENT_DEBUG_JOBS=$(squeue --me -p dev-g | wc -l)
     done
 
-    NAME=${VER}_${N}
-    REAL_OUTDIR=$OUTDIR/TRACES/EXEC_$NAME
-    echo "$NAME running @ $REAL_OUTDIR with $N nodes"
-    ../workflow_scripts/submit_alaro_run.sh \
-                            --version $VER \
-                            --workdir=$REAL_OUTDIR \
-                            --steps $STEPS  \
-                            --nodes=$N \
-                            --partition=dev-g \
-                            --timelimit=$TIMELIMIT \
-                            --environment=$ENV \
-                            --name $NAME \
+    # Set path of output directory and create it.
+    OUTDIR=${OUTDIR_PREFIX:?}/N${N}_T${TRUNCATION}_I${NITER}
+    mkdir -p $OUTDIR
 
-    info "==> Submitted $NAME"
+    # Submit job with correct variables set.
+    export BINARY=$BIN
+    export RESDIR=$OUTDIR
+    export NITER=$NITER
+    export TRUNCATION=$TRUNCATION
+    JOBID=$(sbatch --parsable -N $N --time=$TIMELIMIT \
+        --output=$OUTDIR/slurm-%j.out ${JOBDIR:?}/sbatch_lumi-g.sh)
+    info "==> Submitted GPU on $N nodes with JobID $JOBID"
 done
 
 success "==> Submitted all jobs."
