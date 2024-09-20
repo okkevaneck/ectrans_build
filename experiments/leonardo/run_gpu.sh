@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ------------------------------------------------------------------------------
-# This file runs ecTrans dwarf experiments on MareNostrum 5.
+# This file runs ecTrans dwarf GPU experiments on Leonardo.
 # ------------------------------------------------------------------------------
 # Load helpers for color printing.
 source ../../helpers/helpers.sh

@@ -13,6 +13,12 @@
 #SBATCH --tasks-per-node=4
 #SBATCH --time=00:01:30
 
+# Load helpers for color printing.
+source ../helpers/helpers.sh
+
+# Load directory structure of installation.
+source ../helpers/dirs.sh
+
 # Load modules.
 module load nvhpc/24.3 fftw/3.3.10--openmpi--4.1.6--nvhpc--24.3
 

@@ -12,6 +12,12 @@
 #SBATCH --time=00:05:00
 ##SBATCH --reservation=dd-24-88_2024-09-05T13:00:00_2024-09-05T17:00:00_4_qgpu
 
+# Load helpers for color printing.
+source ../helpers/helpers.sh
+
+# Load directory structure of installation.
+source ../helpers/dirs.sh
+
 # Load modules.
 module load \
     CMake/3.26.3-GCCcore-12.3.0 \
@@ -28,7 +34,7 @@ module load \
 [ -z "$TRUNCATION" ] && TRUNCATION=79
 [ -z "$NITER" ] && NITER=10
 
-export OMP_NUM_THREADS=1
+export OMP_NUM_THREADS=6
 export MPICH_GPU_SUPPORT_ENABLED=1
 
 # Run ecTrans with given arguments.

@@ -1,0 +1,52 @@
+diff --git a/src/trans/gpu/algor/external/fourier/hicfft_hip.h b/src/trans/gpu/algor/external/fourier/hicfft_hip.h
+index 070a427..0d28d44 100644
+--- a/src/trans/gpu/algor/external/fourier/hicfft_hip.h
++++ b/src/trans/gpu/algor/external/fourier/hicfft_hip.h
+@@ -16,7 +16,7 @@
+ #pragma clang diagnostic ignored "-W#pragma-messages"
+ #endif
+ #include <hip/hip_runtime.h>
+-#include "hipfft.h"
++#include "hipfft/hipfft.h"
+ #ifdef __clang__
+ #pragma clang diagnostic pop
+ #endif
+diff --git a/src/trans/gpu/algor/module/hicblas_hip.h b/src/trans/gpu/algor/module/hicblas_hip.h
+index c7e3908..896f12c 100644
+--- a/src/trans/gpu/algor/module/hicblas_hip.h
++++ b/src/trans/gpu/algor/module/hicblas_hip.h
+@@ -15,7 +15,7 @@
+ #pragma clang diagnostic push
+ #pragma clang diagnostic ignored "-W#pragma-messages"
+ #endif
+-#include "hipblas.h"
++#include "hipblas/hipblas.h"
+ #ifdef __clang__
+ #pragma clang diagnostic pop
+ #endif
+diff --git a/src/trans/gpu/algor/module/rocblasDgemmBatched.hip.cpp b/src/trans/gpu/algor/module/rocblasDgemmBatched.hip.cpp
+index 1bedde5..9d95e68 100644
+--- a/src/trans/gpu/algor/module/rocblasDgemmBatched.hip.cpp
++++ b/src/trans/gpu/algor/module/rocblasDgemmBatched.hip.cpp
+@@ -11,7 +11,7 @@
+ #pragma clang diagnostic ignored "-W#pragma-messages"
+ #endif
+ #include "hip/hip_runtime_api.h"
+-#include "rocblas.h"
++#include "rocblas/rocblas.h"
+ #ifdef __clang__
+ #pragma clang diagnostic pop
+ #endif
+diff --git a/src/trans/gpu/algor/module/rocblasSgemmBatched.hip.cpp b/src/trans/gpu/algor/module/rocblasSgemmBatched.hip.cpp
+index aeee560..e306a71 100644
+--- a/src/trans/gpu/algor/module/rocblasSgemmBatched.hip.cpp
++++ b/src/trans/gpu/algor/module/rocblasSgemmBatched.hip.cpp
+@@ -8,7 +8,7 @@
+ #pragma clang diagnostic ignored "-W#pragma-messages"
+ #endif
+ #include "hip/hip_runtime_api.h"
+-#include "rocblas.h"
++#include "rocblas/rocblas.h"
+ #ifdef __clang__
+ #pragma clang diagnostic pop
+ #endif

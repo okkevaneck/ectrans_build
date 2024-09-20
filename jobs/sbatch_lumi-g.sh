@@ -6,7 +6,7 @@
 #SBATCH --partition=dev-g
 #SBATCH --exclusive
 #SBATCH --mem=0
-#SBATCH --account=project_465000454
+#SBATCH --account=project_465000527
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=8
 #SBATCH --ntasks=8
@@ -18,9 +18,13 @@ source ../helpers/helpers.sh
 # Load directory structure of installation.
 source ../helpers/dirs.sh
 
+# Load modules.
+module load LUMI/24.03 partition/G cpe/24.03 craype-x86-trento \
+    craype-accel-amd-gfx90a rocm/6.0.3 cray-fftw/3.3.10.7 cray-libsci/24.03.0
+
 # Set binary and results directory name to ENV value or default.
 [ -z "$BINARY" ] && BINARY="ectrans-benchmark-gpu-dp"
-[ -z "$RESDIR" ] && RESDIR="${SLURM_JOB_ID}.out"
+[ -z "$RESDIR" ] && RESDIR="${RESULTS_DIR}/${SLURM_JOB_ID}.out"
 
 # Set runtime arguments to ENV value or default.
 [ -z "$NFLD" ] && NFLD=1
