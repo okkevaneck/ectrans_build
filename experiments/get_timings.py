@@ -16,8 +16,8 @@ def tail(filename: str, n:int=10):
 def parse_outfile(outfile_path: str):
     """Get the 5th last line of the slurm outfile and parse the timings."""
     time_line = tail(outfile_path, 5)[0]
-    time_line = time_line.strip().split(" ")
-    wallclock, cpu, vector = time_line[8], time_line[15], time_line[23]
+    time_line = time_line.strip().split()
+    wallclock, cpu, vector = time_line[3], time_line[6], time_line[9]
     return wallclock, cpu, vector
 
 
