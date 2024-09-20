@@ -17,7 +17,7 @@ NITER=3
 TRUNCATION=1599
 OUTDIR_PREFIX="$EXPDIR/GPU"
 TIMELIMIT="00:20:00"
-NODES="4 8 16 32"
+NODES="1 4 8 16 32"
 
 # Schedule a job for each number of nodes.
 for N in $NODES; do

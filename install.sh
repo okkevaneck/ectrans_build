@@ -186,7 +186,7 @@ _build_install_ectrans () {
     BUILD_GPU="ON"
     ecbuild -DCMAKE_INSTALL_PREFIX="${INSTALLDIR}/${ECTRANS_DIR}" \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-        -DENABLE_TESTS=OFF \
+        -DENABLE_TESTS=ON \
         -DENABLE_SINGLE_PRECISION=OFF \
         -DENABLE_DOUBLE_PRECISION=ON \
         -DENABLE_TRANSI=ON \
