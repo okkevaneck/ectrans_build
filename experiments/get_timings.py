@@ -45,7 +45,8 @@ def print_timings():
                 
                 # Report results.
                 print(f"{system}\t{version}\t{setup}")
-                print(f"wallclock: {wallclock}\tcpu: {cpu}\tvector: {vector}\n")
+                print("WALLCLOCK\tCPU\tVECTOR")
+                print(f"{wallclock}\t\t{cpu}\t{vector}\n")
 
 
 if __name__ == "__main__":
