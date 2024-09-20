@@ -17,7 +17,7 @@ NITER=3
 TRUNCATION=1599
 OUTDIR_PREFIX="$EXPDIR/CPU"
 TIMELIMIT="00:20:00"
-NODES="4 8 16 32"
+NODES="1 2 4 8 16 32"
 
 # Schedule a job for each number of nodes.
 for N in $NODES; do
@@ -32,7 +32,7 @@ for N in $NODES; do
     JOBID=$(sbatch --parsable -N $N --time=$TIMELIMIT \
         --gpus-per-node=0 \
         --output=$OUTDIR/slurm-%j.out ${JOBDIR:?}/sbatch_mn5.sh)
-    info "==> Submitted GPU on $N nodes with JobID $JOBID"
+    info "==> Submitted CPU on $N nodes with JobID $JOBID"
 done
 
 success "==> Submitted all jobs."

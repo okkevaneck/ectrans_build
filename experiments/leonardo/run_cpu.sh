@@ -33,7 +33,7 @@ for N in $NODES; do
     JOBID=$(sbatch --parsable -N $N --time=$TIMELIMIT \
         --gpus-per-node=0 \
         --output=$OUTDIR/slurm-%j.out ${JOBDIR:?}/sbatch_leonardo.sh)
-    info "==> Submitted GPU on $N nodes with JobID $JOBID"
+    info "==> Submitted CPU on $N nodes with JobID $JOBID"
 done
 
 success "==> Submitted all jobs."
