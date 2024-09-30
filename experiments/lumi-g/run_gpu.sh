@@ -14,6 +14,7 @@ EXPDIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 # Define experiment details.
 BIN=ectrans-benchmark-gpu-dp
 NITER=3
+NLEV=1
 TRUNCATION=1599
 OUTDIR_PREFIX="$EXPDIR/GPU"
 TIMELIMIT="00:20:00"
@@ -36,6 +37,7 @@ for N in $NODES; do
     export BINARY=$BIN
     export RESDIR=$OUTDIR
     export NITER=$NITER
+    export NLEV=$NLEV
     export TRUNCATION=$TRUNCATION
     JOBID=$(sbatch --parsable -N $N --time=$TIMELIMIT \
         --output=$OUTDIR/slurm-%j.out ${JOBDIR:?}/sbatch_lumi-g.sh)

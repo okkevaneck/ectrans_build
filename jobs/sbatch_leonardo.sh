@@ -44,6 +44,7 @@ mpirun \
         --uvders \
         --norms \
         --nfld $NFLD \
+        --nlev $NLEV \
         --truncation $TRUNCATION \
         --niter $NITER
 
