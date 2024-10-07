@@ -11,12 +11,6 @@
 #SBATCH --gpus-per-node=4
 #SBATCH --time=00:01:30
 
-# Load helpers for color printing.
-source ../helpers/helpers.sh
-
-# Load directory structure of installation.
-source ../helpers/dirs.sh
-
 # Load modules.
 module load \
     nvidia-hpc-sdk/24.3 \
