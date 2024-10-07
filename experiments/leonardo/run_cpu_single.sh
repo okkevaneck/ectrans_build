@@ -13,12 +13,12 @@ EXPDIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 # Define experiment details.
 BIN=ectrans-benchmark-cpu-dp
-NITER=3
-NLEV=1
-TRUNCATION=1599
-OUTDIR_PREFIX="$EXPDIR/CPU"
-TIMELIMIT="00:20:00"
-NODES="1 2 4 8 16 32"
+NITER=10
+NLEV=137
+TRUNCATION=399
+OUTDIR_PREFIX="$EXPDIR/CPU_single"
+TIMELIMIT="00:05:00"
+NODES="1"
 
 # Schedule a job for each number of nodes.
 for N in $NODES; do
