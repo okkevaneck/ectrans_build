@@ -12,13 +12,13 @@ source ../../helpers/dirs.sh
 EXPDIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 # Define experiment details.
-BIN=ectrans-benchmark-cpu-dp
-NITER=1
-NLEV=1
-TRUNCATION=1599
-OUTDIR_PREFIX="$EXPDIR/CPU"
+BIN=ectrans-benchmark-gpu-dp
+NITER=10
+NLEV=79
+TRUNCATION=1279
+OUTDIR_PREFIX="$EXPDIR/GPU_scaling"
 TIMELIMIT="00:20:00"
-NODES="1 2 4 8 16"
+NODES="4 8 16 32"
 
 # Schedule a job for each number of nodes.
 for N in $NODES; do
@@ -31,10 +31,10 @@ for N in $NODES; do
     export NITER=$NITER
     export NLEV=$NLEV
     export TRUNCATION=$TRUNCATION
-    JOBID=$(sbatch --parsable -N $N --time=$TIMELIMIT --gpus-per-node=1 \
+    JOBID=$(sbatch --parsable -N $N --time=$TIMELIMIT --gpus-per-node=8 \
         --tasks-per-node=8 --output=$OUTDIR/slurm-%j.out \
         ${JOBDIR:?}/sbatch_karolina.sh)
-    info "==> Submitted CPU on $N nodes with JobID $JOBID"
+    info "==> Submitted GPU on $N nodes with JobID $JOBID"
 done
 
 success "==> Submitted all jobs."
