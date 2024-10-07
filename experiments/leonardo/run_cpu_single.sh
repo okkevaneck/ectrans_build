@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ------------------------------------------------------------------------------
-# This file runs ecTrans dwarf GPU experiments on Leonardo.
+# This file runs ecTrans dwarf experiments on MareNostrum 5.
 # ------------------------------------------------------------------------------
 # Load helpers for color printing.
 source ../../helpers/helpers.sh
@@ -12,12 +12,13 @@ source ../../helpers/dirs.sh
 EXPDIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 # Define experiment details.
-BIN=ectrans-benchmark-gpu-dp
-NITER=3
-TRUNCATION=1599
-OUTDIR_PREFIX="$EXPDIR/GPU"
-TIMELIMIT="00:20:00"
-NODES="1 2 4 8 16 32"
+BIN=ectrans-benchmark-cpu-dp
+NITER=10
+NLEV=137
+TRUNCATION=399
+OUTDIR_PREFIX="$EXPDIR/CPU_single"
+TIMELIMIT="00:05:00"
+NODES="1"
 
 # Schedule a job for each number of nodes.
 for N in $NODES; do
@@ -29,10 +30,12 @@ for N in $NODES; do
     export BINARY=$BIN
     export RESDIR=$OUTDIR
     export NITER=$NITER
+    export NLEV=$NLEV
     export TRUNCATION=$TRUNCATION
     JOBID=$(sbatch --parsable -N $N --time=$TIMELIMIT \
+        --gpus-per-node=0 \
         --output=$OUTDIR/slurm-%j.out ${JOBDIR:?}/sbatch_leonardo.sh)
-    info "==> Submitted GPU on $N nodes with JobID $JOBID"
+    info "==> Submitted CPU on $N nodes with JobID $JOBID"
 done
 
 success "==> Submitted all jobs."

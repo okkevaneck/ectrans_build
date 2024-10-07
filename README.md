@@ -57,6 +57,24 @@ After building or installing an application, there will be a log file in each
 sub-directory of `src` with the name of the application. You can use
 this to debug any alterations you made to the source code.
 
+Make sure to run the build and install instructions from an interactive compute
+node on a partition with GPUs available! To allocate and cd into an interactive 
+node, you can run the following code, where you replace the account, partition, 
+and qos according to the system at use:
+
+```bash
+salloc \
+    --account=<account> \
+    --partition=<partition> \
+    --qos=<qos> \
+    --exclusive \
+    --job-name=acc_interactive \
+    --time=00:30:00 \
+    --ntasks=1 \
+    --nodes=1 \
+    srun --pty bash -i
+```
+
 ### Installation instructions for LUMI
 Since the compute nodes have internet access, you can simply run 
 `./install.sh lumi` to download and install all applications on a compute node.
@@ -110,14 +128,14 @@ want to remove the ectrans installation, you can remove it with:
 ./clean.sh install ectrans
 ```
 
-## Single execution
+## Performing experiments
 After you have succesfully build and installed all three components, you can
 now run the binaries located at `src/install/ectrans/bin`. The `jobs` directory 
 , located in the top-level `ectrans_dwarf` directory, contains pre-made sbatch
-scripts for executing the model on the specified machine through SLURM jobs. If 
-you want for example to run the GPU version on LUMI-G, you can `sbatch` the 
-`sbatch_lumi-g.sh` script, which runs the GPU model by default with the 
-following default variables:
+scripts for executing the model on the specified machine through SLURM jobs.
+Each of the scripts' name ends with the targetted machine name, e.g. 
+`sbatch_lumi-g.sh` is for running on the LUMI-G partition. The script runs the 
+GPU model by default with the following default variables:
 
 ```bash
 BINARY=ectrans-benchmark-gpu-dp
@@ -134,21 +152,13 @@ of any binary in the folder listed above as `BINARY` to change the model.
 Futhermore, you can also change the name of your results folder by changing the
 `RESDIR` environment variable.
 
-### Reading the ouput
-The model's output consists of a `stderr` and `stdout` file per rank, as well as 
-a combined stdout in the slurm outfile. Only rank 0 writes results to stdout,
-and thus you can use the general slurm outfile. The outfile will start with some
-model definitions, followed by runtime statistics. At the end, there will be an
-overview of timing statistics in which each major routine is mentioned. At the
-bottom you will find the total measured imbalance as well as wallclock time.
-
-## Pre-defined experiments
-Besides running a single execution, there is also the `experiments` directory
-with pre-defined scripts for performing scaling experiments using the CPU or GPU
-models on the different supported machines. There are subdirectories for each
-machine, which contain a `run_cpu.sh` and a `run_gpu.sh` script for submitting
-multiple jobs at the different scales. Each of these scripts have the following
-list of variables that can be altered according to your needs:
+These job scripts are used by the experiments located in the `experiments` 
+folder. This folder contains pre-defined scripts for performing scaling 
+experiments using the CPU or GPU models on the different supported machines. 
+There are subdirectories for each machine, which contain a `run_cpu.sh` and a 
+`run_gpu.sh` script for submitting multiple jobs at the different scales. Each 
+of these scripts have the following list of variables that can be altered 
+according to your needs:
 
 ```bash
 # Define experiment details.
@@ -163,13 +173,26 @@ NODES="4 8 16 32"
 The ones that we advise to alter are `NITER` for the number of iterations, and
 `NODES` to specify how many nodes each job must have. The `TRUNCATION` variable
 defines the size of the arrays, the higher the number, the higher the 
-resolution, and  the bigger the array. We took 1599 as a value, because it is 
-at the boundry of out-of-memory errors for some machines. However, feel free to
-experiment. You might need to change the job time limit accordingly via the 
+resolution, and thus the bigger the array. We took 1599 as a value, because it 
+is at the boundry of out-of-memory errors for some machines. However, feel free 
+to experiment. You might need to change the job time limit accordingly via the 
 `TIMELIMIT` variable.
+
+### Reading the ouput
+The model's output consists of a `stderr` and `stdout` file per rank, as well as 
+a combined stdout in the slurm outfile. Only rank 0 writes results to stdout,
+and thus you can use the general slurm outfile. The outfile will start with some
+model definitions, followed by runtime statistics. At the end, there will be an
+overview of timing statistics in which each major routine is mentioned. At the
+bottom you will find the total measured imbalance as well as wallclock time.
+
+#### LUMI-G exception
+Warning: currently the output is not aggregated in the slurm outfile on LUMI-G,
+and thus you will need to navigate to the out file of rank 0.
+
 
 ## Score-P integration Karolina
 There is Score-P integration on the Karolina supercomputer for who's interested.
-You simply need to `export SCOREP_OPENACC_ENABLE=yes` in order to activate the
-tracing. This is done for you in the experiment 
+You simply need to `export SCOREP_OPENACC_ENABLE=yes` before installation in 
+order to activate the tracing. This is done for you in the experiment 
 `experiments/karolina/run_scorep_gpu.sh` as well.
