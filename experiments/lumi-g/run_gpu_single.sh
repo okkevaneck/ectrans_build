@@ -17,7 +17,7 @@ NITER=10
 NLEV=137
 TRUNCATION=399
 OUTDIR_PREFIX="$EXPDIR/GPU_single"
-TIMELIMIT="01:00:00"
+TIMELIMIT="00:05:00"
 NODES="1"
 
 # Debug queue can maximumly have 2 jobs inside.

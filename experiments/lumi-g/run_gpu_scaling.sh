@@ -16,15 +16,15 @@ BIN=ectrans-benchmark-gpu-dp
 NITER=10
 NLEV=79
 TRUNCATION=1279
-OUTDIR_PREFIX="$EXPDIR/GPU_single"
+OUTDIR_PREFIX="$EXPDIR/GPU_scaling"
 TIMELIMIT="01:00:00"
-NODES="4 8 16 32"
+NODES="8 16 32"
 
 # Debug queue can maximumly have 2 jobs inside.
 for N in $NODES; do
     # Wait for queque space.
     CONCURRENT_DEBUG_JOBS=$(squeue --me -p dev-g | wc -l)
-    while [ $CONCURRENT_DEBUG_JOBS -eq 2 ]; do
+    while [ $CONCURRENT_DEBUG_JOBS -eq 3 ]; do
         sleep 10
         CONCURRENT_DEBUG_JOBS=$(squeue --me -p dev-g | wc -l)
     done

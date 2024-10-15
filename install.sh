@@ -279,6 +279,10 @@ detect_and_load_machine() {
                 craype-x86-trento craype-accel-amd-gfx90a rocm/6.0.3 \
                 cray-fftw/3.3.10.7 cray-libsci/24.03.0 buildtools/24.03
 
+            # Fix for CPU ALLOCATE bug with new LUMI software stack.
+            module load cce/16.0.1 cray-libsci/23.09.1.1
+#            LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64
+
             # Set compilers for make/cmake.
             export FC90=ftn
             export FC=ftn

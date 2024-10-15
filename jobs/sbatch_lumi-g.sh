@@ -36,6 +36,7 @@ cat << EOF > "$SELECT_GPU_NAME"
 #!/bin/bash
 
 export ROCR_VISIBLE_DEVICES=\$SLURM_LOCALID
+export LD_PRELOAD=/usr/lib64/libstdc++.so.6
 exec \$*
 EOF
 chmod +x "$SELECT_GPU_NAME"
