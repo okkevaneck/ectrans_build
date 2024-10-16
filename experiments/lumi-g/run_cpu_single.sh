@@ -16,8 +16,8 @@ BIN=ectrans-benchmark-cpu-dp
 NITER=10
 NLEV=137
 TRUNCATION=399
-OUTDIR_PREFIX="$EXPDIR/CPU"
-TIMELIMIT="01:00:00"
+OUTDIR_PREFIX="$EXPDIR/CPU_single"
+TIMELIMIT="00:05:00"
 NODES="1"
 
 # Debug queue can maximumly have 2 jobs inside.
@@ -40,6 +40,7 @@ for N in $NODES; do
     export NLEV=$NLEV
     export TRUNCATION=$TRUNCATION
     JOBID=$(sbatch --parsable -N $N --time=$TIMELIMIT \
+        --gpus-per-node=1 \
         --output=$OUTDIR/slurm-%j.out ${JOBDIR:?}/sbatch_lumi-g.sh)
     info "==> Submitted CPU on $N nodes with JobID $JOBID"
 done

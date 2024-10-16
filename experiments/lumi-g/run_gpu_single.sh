@@ -24,7 +24,7 @@ NODES="1"
 for N in $NODES; do
     # Wait for queque space.
     CONCURRENT_DEBUG_JOBS=$(squeue --me -p dev-g | wc -l)
-    while [ $CONCURRENT_DEBUG_JOBS -eq 2 ]; do
+    while [ $CONCURRENT_DEBUG_JOBS -eq 3 ]; do
         sleep 10
         CONCURRENT_DEBUG_JOBS=$(squeue --me -p dev-g | wc -l)
     done
