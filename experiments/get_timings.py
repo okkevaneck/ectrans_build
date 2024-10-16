@@ -7,6 +7,23 @@ import pathlib
 from collections import deque
 
 
+def is_results(root: str) -> bool:
+    """Determine if the root points to a results directory."""
+    exp_names = [
+        "CPU",
+        "CPU_single",
+        "CPU_scaling",
+        "GPU",
+        "GPU_single",
+        "GPU_scaling",
+    ]
+
+    for n in exp_names:
+        if f"{os.sep}{n}{os.sep}" in root:
+            return True
+    return False
+
+
 def tail(filename: str, n:int=10):
     """Return the last n lines of a file."""
     with open(filename) as f:
@@ -30,10 +47,9 @@ def print_timings():
     # Go over systems, version, and setup. 
     for root, _, files in os.walk(exp_path):
         # Make sure the results are from CPU and GPU experiments.
-        if f"{os.sep}CPU{os.sep}" not in root and \
-            f"{os.sep}GPU{os.sep}" not in root:
-                continue
-        
+        if not is_results(root):
+            continue
+
         # Find the SLURM out files.
         for f in files:
             if f.startswith("slurm-") and f.endswith(".out"):

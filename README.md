@@ -155,10 +155,11 @@ Futhermore, you can also change the name of your results folder by changing the
 These job scripts are used by the experiments located in the `experiments` 
 folder. This folder contains pre-defined scripts for performing scaling 
 experiments using the CPU or GPU models on the different supported machines. 
-There are subdirectories for each machine, which contain a `run_cpu.sh` and a 
-`run_gpu.sh` script for submitting multiple jobs at the different scales. Each 
-of these scripts have the following list of variables that can be altered 
-according to your needs:
+There are subdirectories for each machine, which contain a `run_cpu_single.sh`,
+`run_cpu_scaling.sh`, `run_gpu_single.sh`, and `run_gpu_scaling.sh` scripts.
+These scripts all submit multiple jobs at different scales. Each of these 
+scripts have the following list of variables that can be altered according
+to your needs:
 
 ```bash
 # Define experiment details.
@@ -170,13 +171,16 @@ TIMELIMIT="00:20:00"
 NODES="4 8 16 32"
 ```
 
-The ones that we advise to alter are `NITER` for the number of iterations, and
-`NODES` to specify how many nodes each job must have. The `TRUNCATION` variable
-defines the size of the arrays, the higher the number, the higher the 
-resolution, and thus the bigger the array. We took 1599 as a value, because it 
-is at the boundry of out-of-memory errors for some machines. However, feel free 
-to experiment. You might need to change the job time limit accordingly via the 
-`TIMELIMIT` variable.
+The ones that we advise to alter freely are `NITER` for the number of iterations, 
+`NODES` to specify how many nodes each job must have, and `TIMELIMIT` to change
+the job time limit. The `TRUNCATION` variable defines the size of the arrays, 
+the higher the number, the higher the resolution, and thus the bigger the array.
+The `NLEV` variable defines the number of levels in the atmosphere, or the 
+number of these TRUNCATION-based arrays. The 'single' experiment scripts are 
+small workloads on one node, which can be used as a test case. The 'scaling' 
+experiment scripts are larger workloads that are close to production scale. The 
+only difference is that the `NLEV` variable has been set to 79 instead of 137, 
+because there are out-of-memory errors with the higher value.
 
 ### Reading the ouput
 The model's output consists of a `stderr` and `stdout` file per rank, as well as 
@@ -184,7 +188,9 @@ a combined stdout in the slurm outfile. Only rank 0 writes results to stdout,
 and thus you can use the general slurm outfile. The outfile will start with some
 model definitions, followed by runtime statistics. At the end, there will be an
 overview of timing statistics in which each major routine is mentioned. At the
-bottom you will find the total measured imbalance as well as wallclock time.
+bottom you will find the total measured imbalance as well as wallclock time. 
+To make parsing easier, there is a `get_timings.py` script within the 
+`experiments` folder, which scrapes results and outputs the timings.
 
 #### LUMI-G exception
 Warning: currently the output is not aggregated in the slurm outfile on LUMI-G,
